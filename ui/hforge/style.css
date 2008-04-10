@@ -1,0 +1,121 @@
+body {
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size: 14px;
+  margin: 0px;
+  padding: 0px;
+}
+
+td {
+  margin: 0px 0px 0px 0px;
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size: 14px;
+}
+
+h1 {
+  font-size: 1.7em;
+}
+
+h2 {
+  font-size: 1.4em;
+}
+
+pre {
+  padding: 1em;
+  border: 1px dashed #729fcf;
+  background: #fafafa;
+}
+
+a {
+  font-weight: bold;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+div#wrapper {
+  width: 100%;
+}
+
+/**************************************************************************
+ * Header *
+ **************************************************************************/
+#header {
+  background: #729fcf url(images/logo2.png) no-repeat bottom left;
+  color: #ffffff;
+  padding: 22px 2px 4px 200px;
+  text-align: left;
+}
+
+#header * {
+  color: #ffffff;
+}
+
+
+/**************************************************************************
+ * Body *
+ **************************************************************************/
+div#body {
+  text-align: left;
+  padding: 15px;
+}
+
+
+/**************************************************************************
+ * Column Left */
+#columnleft {
+  width: 522px;
+}
+
+#columnleft h4 a {
+  color: #000;
+  text-decoration: none;
+}
+
+/**************************************************************************
+ * Column Right */
+#columnright {
+  padding-left: 30px;
+  width: 261px;
+}
+
+#columnright div {
+  margin-bottom: 30px;
+}
+
+#columnright div.old span, div.old a {
+  color: #555;
+}
+
+
+/**************************************************************************
+ * Home Page */
+a.banner {
+  display: block;
+  border: dashed 2px #729fcf;
+  color: #000000;
+  font: normal 15px Verdana, sans-serif;
+  margin: 0px 0px 10px 0px;
+  padding: 5px;
+}
+
+a.banner:hover,
+a.banner:active {
+  background-color: #c2dfff;
+  text-decoration: none;
+}
+
+a#banner_localizer {
+  border-color: #cccc9a;
+}
+
+a#banner_localizer:hover,
+a#banner_localizer:hover {
+  background-color: #ececba;
+}
+
+a#banner_localizer img {
+  margin: 0px 6px 0px 0px;
+  padding: 0px;
+}

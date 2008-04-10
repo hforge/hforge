@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <p>Subscription to the mailing list failed:</p>
+  <ul>
+    <li style="color: red" stl:repeat="message messages">${message}</li>
+  </ul>
+  <form action="/community" method="get">
+    <input type="submit" value="Try Again" />
+  </form>
+</div>
