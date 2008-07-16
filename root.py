@@ -26,9 +26,7 @@ from ikaaro.skins import register_skin
 from ikaaro.root import Root as BaseRoot
 
 
-
 class Root(BaseRoot):
-
     class_id = 'hforge.org'
     class_title = 'HForge'
     class_skin = 'ui/hforge'
@@ -73,5 +71,7 @@ class Root(BaseRoot):
 ###########################################################################
 # Register
 ###########################################################################
+# Objects
 register_object_class(Root)
+# Skin
 register_skin('hforge', get_abspath(globals(), 'ui/hforge'))

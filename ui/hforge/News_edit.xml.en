@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <h2>Add Resource of Type "${class_title}"</h2>
+
+  <form name="new_document" action="${action}" method="post">
+    <dl>
+      <dt><label for="title">Title</label></dt>
+      <dd>
+        <input type="text" id="title" name="title" size="40"
+          value="${title}" />
+      </dd>
+      <dl><label for="date">Date</label></dl>
+      <dd>
+        <p>
+          ${date}
+        </p>
+      </dd>
+    </dl>
+    <label for="description">Description</label>
+    <p>
+      ${description}
+    </p>
+    <p>
+      <input type="hidden" name="class_id" value="${class_id}" />
+      <input type="hidden" name="timestamp" value="${timestamp}" />
+      <input type="submit" value="${submit}" class="button_ok"/>
+    </p>
+  </form>
+
+  <script type="text/javascript">
+    focus_element("title")
+  </script>
+
+</stl:block>
