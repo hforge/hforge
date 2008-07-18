@@ -54,18 +54,15 @@ class News(WebPage):
 
     def get_catalog_fields(self):
         base_fields = WebPage.get_catalog_fields(self)
-        fields = [
-            KeywordField('date', is_stored=True)]
-        return base_fields + fields
+        field = KeywordField('date', is_stored=True)
+        base_fields.append(field)
+        return base_fields
 
 
     def get_catalog_values(self):
-        base_indexes = WebPage.get_catalog_values(self)
-        property = self.get_property
-        indexes = {
-            'date': property('date').isoformat()}
-        base_indexes.update(indexes)
-        return base_indexes
+        indexes = WebPage.get_catalog_values(self)
+        indexes['date'] = self.get_property('date').isoformat()
+        return indexes
 
 
     @staticmethod
