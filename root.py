@@ -59,7 +59,7 @@ class Root(BaseRoot):
 
         # Subscribe
         email = form['email']
-        to_addr = '%s-subscribe-%s@ikaaro.org' % (form['list'],
+        to_addr = '%s-subscribe-%s@hforge.org' % (form['list'],
                                                   email.replace('@', '='))
         context.root.send_email(to_addr, u'Subscribe', email,
                                 subject_with_host=False)
