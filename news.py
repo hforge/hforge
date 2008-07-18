@@ -18,6 +18,7 @@
 from datetime import date, datetime
 
 # Import from itools
+from itools.catalog import KeywordField
 from itools.datatypes import Date, DateTime, Unicode
 from itools.handlers import checkid
 from itools.stl import stl
@@ -51,6 +52,22 @@ class News(WebPage):
         return schema
 
 
+    def get_catalog_fields(self):
+        base_fields = WebPage.get_catalog_fields(self)
+        fields = [
+            KeywordField('date', is_stored=True)]
+        return base_fields + fields
+
+
+    def get_catalog_values(self):
+        base_indexes = WebPage.get_catalog_values(self)
+        property = self.get_property
+        indexes = {
+            'date': property('date').isoformat()}
+        base_indexes.update(indexes)
+        return base_indexes
+
+
     @staticmethod
     def new_instance_form(cls, context):
         root = context.root
@@ -60,13 +77,11 @@ class News(WebPage):
         namespace['submit'] = u'Add'
         get = context.get_form_value
         namespace['title'] = get('title', type=Unicode)
-        namespace['description'] = root.get_rte(context, 'description', None,
-                                                template='/ui/hforge/rte.xml')
+        namespace['html'] = root.get_rte(context, 'html', None,
+                                         template='/ui/hforge/rte.xml')
         widget = DateWidget('date')
-        release_date = get('date', date.today().strftime('%Y-%m-%d'),
-                           type=Date)
+        release_date = get('date', date.today().isoformat(), type=Date)
         namespace['date'] = widget.to_html(Date, release_date)
-        # The class id and title
         namespace['class_id'] = cls.class_id
         namespace['class_title'] = cls.gettext(cls.class_title)
         namespace['timestamp'] = DateTime.encode(datetime.now())
@@ -78,7 +93,7 @@ class News(WebPage):
     def new_instance(cls, container, context):
         get = context.get_form_value
         title = get('title', type=Unicode)
-        description = get('description')
+        html = get('html')
         release_date = get('date', type=Date)
 
         # Check the name
@@ -94,13 +109,13 @@ class News(WebPage):
         if container.has_object(name):
             return context.come_back(MSG_NAME_CLASH)
 
-        object = cls.make_object(cls, container, name)
-        # The metadata
-        metadata = object.metadata
+        # Make Object
         language = container.get_content_language(context)
+        object = cls.make_object(cls, container, name, body=html,
+                                 language=language)
+        metadata = object.metadata
         metadata.set_property('title', title, language=language)
         metadata.set_property('date', release_date)
-        metadata.set_property('description', description, language=language)
 
         goto = './%s/;%s' % (name, object.get_firstview())
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
@@ -113,12 +128,7 @@ class News(WebPage):
         language = self.get_content_language(context)
         namespace = {}
         namespace['title'] = self.get_property('title', language=language)
-        description = self.get_property('description', language=language)
-        try:
-            namespace['description'] = XMLParser(description.encode('utf-8'))
-        except XMLError:
-            return context.come_back(u'Invalid HTML code.',
-                                     keep=['description'])
+        namespace['html'] = self.handler.events
         namespace['date'] = self.get_property('date')
         template = self.get_object('/ui/hforge/News_view.xml')
         return stl(template, namespace)
@@ -136,9 +146,9 @@ class News(WebPage):
         widget = DateWidget('date')
         release_date = self.get_property('date')
         namespace['date'] = widget.to_html(Date, release_date)
-        description = self.get_property('description', language=language)
-        namespace['description'] = \
-            self.get_rte(context, 'description', description,
+        namespace['html'] = \
+            self.get_rte(context, 'html',
+                         self.handler.events,
                          template='/ui/hforge/rte.xml')
         namespace['class_id'] = self.class_id
         namespace['class_title'] = self.class_title
@@ -163,11 +173,15 @@ class News(WebPage):
         if not title.strip():
             return context.come_back(MSG_NAME_MISSING)
         release_date = get('date', type=Date)
-        description = get('description')
+        html = get('html')
         language = self.get_content_language(context)
         self.set_property('title', title, language=language)
         self.set_property('date', release_date)
-        self.set_property('description', description, language=language)
+        # Body
+        try:
+            self.handler.events = list(XMLParser(html))
+        except XMLError:
+            return context.come_back(u'Invalid HTML code.')
         return context.come_back(MSG_CHANGES_SAVED)
 
 

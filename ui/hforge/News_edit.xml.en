@@ -20,9 +20,9 @@
         </p>
       </dd>
     </dl>
-    <label for="description">Description</label>
+    <label for="html">Description</label>
     <p>
-      ${description}
+      ${html}
     </p>
     <p>
       <input type="hidden" name="class_id" value="${class_id}" />

@@ -14,8 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from datetime import date
+
 # Import from itools
 from itools import get_abspath
+from itools.catalog import EqQuery
 from itools.datatypes import Email, String
 from itools.stl import stl
 from itools.web import FormError
@@ -25,6 +29,9 @@ from ikaaro.registry import register_object_class
 from ikaaro.skins import register_skin
 from ikaaro.root import Root as BaseRoot
 
+# Import from hforge
+from news import News
+
 
 class Root(BaseRoot):
     class_id = 'hforge.org'
@@ -33,6 +40,35 @@ class Root(BaseRoot):
 
     browse_content__access__ = 'is_allowed_to_edit'
     last_changes__access__ = 'is_allowed_to_edit'
+
+
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'View'
+    view__title__ = u'View'
+    def view(self, context):
+        root = context.root
+        # Find documents
+        query = EqQuery('format', News.class_id)
+        results = context.root.search(query)
+        documents = results.get_documents(sort_by='date', reverse=True)
+        # Browse metadatas
+        lines = []
+        for news in documents:
+            if news.workflow_state == 'public':
+                line = {}
+                line['title'] = news.title
+                year, month, day = news.date.split('-')
+                date_object = date(int(year), int(month), int(day))
+                formated_date = date_object.strftime('%b %dth %Y')
+                line['date'] = formated_date
+                handler = root.get_object(news.abspath).handler
+                html = handler.events
+                line['html'] = html
+                lines.append(line)
+
+        namespace = {'objects': lines}
+        template = self.get_object('/ui/hforge/Root_view.xml')
+        return stl(template, namespace)
 
 
     subscribe__access__ = True
@@ -66,6 +102,7 @@ class Root(BaseRoot):
 
         handler = self.get_object('/ui/hforge/subscribe_ok.xml')
         return stl(handler)
+
 
 
 ###########################################################################
