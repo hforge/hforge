@@ -57,12 +57,12 @@ class Root(BaseRoot):
     last_changes__access__ = 'is_allowed_to_edit'
 
 
-    GET__access__ = 'is_allowed_to_view'
+    GET__access__ = True
     def GET(self, context):
         return context.uri.resolve2(';view')
 
 
-    view__access__ = 'is_allowed_to_view'
+    view__access__ = True
     view__label__ = u'View'
     view__title__ = u'View'
     def view(self, context):
