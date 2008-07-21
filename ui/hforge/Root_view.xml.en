@@ -3,14 +3,31 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-
-  <p>Welcome to hforge.org, the home of <a href="../itools">itools</a> and related projects.</p>
-  <h2 style="color: rgb(255, 0, 0);">What's new?</h2>
-
-  <stl:block stl:repeat="object objects">
-    <h4>${object/title} (${object/date})</h4>
-    ${object/html}
-    <hr size="1" align="center" noshade="noshade" />
-  </stl:block>
-
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tbody>
+      <tr>
+        <td id="columnleft" valign="top">
+          <p>Welcome to hforge.org, the home of <a href="../itools">itools</a> and related projects.</p>
+          <h2 style="color: rgb(255, 0, 0);">What's new?</h2>
+          <stl:block stl:repeat="object objects">
+            <h4>${object/title} (${object/date})</h4>
+            ${object/html}
+            <hr size="1" align="center" noshade="noshade" />
+          </stl:block>
+        </td>
+        <td id="columnright" valign="top">
+          <a class="banner" id="banner_itools" name="banner_itools" href="../itools">
+            <tt style="font-size: 21px;">itools</tt>...
+            the indispensable toolbox for the advanced Python
+            developer: a virtual file system, an index and search
+            engine, a web programming interface, and much more!
+          </a>
+          <a class="banner" id="banner_localizer" name="banner_localizer" href="../localizer">
+            <img align="left" border="0" src="../images/localizer" />
+            The standard Zope product to build multilingual web applications. Get multilingual with Localizer!
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </stl:block>
