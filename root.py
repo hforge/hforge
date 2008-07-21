@@ -33,6 +33,21 @@ from ikaaro.root import Root as BaseRoot
 from news import News
 
 
+def format_date(day):
+    if day > 3 and day < 14:
+        return '%b %dth %Y'
+    indicator = day % 10
+    if indicator == 1:
+        return '%b %dst %Y'
+    elif indicator == 2:
+        return '%b %dnd %Y'
+    elif indicator == 3:
+        return '%b %drd %Y'
+    else:
+        return '%b %dth %Y'
+
+
+
 class Root(BaseRoot):
     class_id = 'hforge.org'
     class_title = 'HForge'
@@ -59,7 +74,8 @@ class Root(BaseRoot):
                 line['title'] = news.title
                 year, month, day = news.date.split('-')
                 date_object = date(int(year), int(month), int(day))
-                formated_date = date_object.strftime('%b %dth %Y')
+                format = format_date(date_object.day)
+                formated_date = date_object.strftime(format)
                 line['date'] = formated_date
                 handler = root.get_object(news.abspath).handler
                 html = handler.events
