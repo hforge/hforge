@@ -12,7 +12,7 @@
 <body>
   <div id="wrapper">
     <div id="header">
-      <a href="/index">Home</a> &nbsp;
+      <a href="/;view">Home</a> &nbsp;
       <a href="/docs">Documentation</a> &nbsp;
       <a href="/community">Community</a>
       <br/>
