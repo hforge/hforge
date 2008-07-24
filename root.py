@@ -18,7 +18,6 @@
 from datetime import date
 
 # Import from itools
-from itools import get_abspath
 from itools.catalog import EqQuery
 from itools.datatypes import Email, String
 from itools.stl import stl
@@ -26,8 +25,8 @@ from itools.web import FormError
 
 # Import from ikaaro
 from ikaaro.registry import register_object_class
-from ikaaro.skins import register_skin
 from ikaaro.root import Root as BaseRoot
+from ikaaro.website import WebSite
 
 # Import from hforge
 from news import News
@@ -86,9 +85,40 @@ class Root(BaseRoot):
                 html = handler.events
                 line['html'] = html
                 lines.append(line)
-
         namespace = {'objects': lines}
         template = self.get_object('/ui/hforge/Root_view.xml')
+        return stl(template, namespace)
+
+
+    projects__access__ = True
+    projects__label__ = u'Projects'
+    projects__title__ = u'Projects'
+    def projects(self, context):
+        root = context.root
+        infos = []
+        project_titles = []
+        projects_dict = {}
+        language = self.get_content_language(context)
+        projects = root.search_objects(object_class=WebSite)
+        # Sort
+        for project in projects:
+            title = project.get_property('title', language=language)
+            project_titles.append(title)
+            projects_dict[title] = project
+        project_titles.sort(key=unicode.lower)
+        # Build namespace
+        for title in project_titles:
+            info = {}
+            info['title'] = title
+            info['url'] = title.lower().replace(' ', '-')
+            project = projects_dict[title]
+            description = project.get_property('description',
+                                               language=language)
+            info['description'] = description
+            infos.append(info)
+        namespace = {}
+        namespace['projects'] = infos
+        template = self.get_object('/ui/hforge/Root_projects.xml')
         return stl(template, namespace)
 
 
@@ -129,7 +159,4 @@ class Root(BaseRoot):
 ###########################################################################
 # Register
 ###########################################################################
-# Objects
 register_object_class(Root)
-# Skin
-register_skin('hforge', get_abspath(globals(), 'ui/hforge'))

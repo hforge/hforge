@@ -8,20 +8,35 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link type="text/css" rel="stylesheet" href="../wiki/style.css" />
   <link type="text/css" rel="stylesheet" href="style.css" />
+  <link type="text/css" rel="stylesheet" href="../odf-i18n/style.css" />
 </head>
 <body>
   <div id="wrapper">
     <div id="header">
       <a href="/;view">Home</a> &nbsp;
+      <a href="/;projects">Projects</a> &nbsp;
       <a href="/docs">Documentation</a> &nbsp;
       <a href="/community">Community</a>
-      <br/>
-      <a href="/itools">itools</a> /
-      <a href="/ikaaro">ikaaro</a> /
-      <a href="/localizer">Localizer</a>
     </div>
     <div id="body">
-      ${body}
+      <div id="message" stl:if="message">${message}</div>
+      <table border ="0" cellpadding="0" cellspacing="0">
+        <tbody>
+          <tr>
+            <td id="h1_title" colspan="2">
+              <h1 stl:if="h1_title">${h1_title}</h1>
+            </td>
+          </tr>
+          <tr>
+            <td id="columnleft">
+              ${body}
+            </td>
+            <td stl:if="column" id="columnright">
+              ${column}
+            </td>
+          </tr>
+      </tbody>
+      </table>
     </div>
   </div>
 </body>

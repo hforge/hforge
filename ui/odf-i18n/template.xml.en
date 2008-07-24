@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <p>
+    <em>odf-i18n-tests</em> is a test suite which can be used to valid
+    any converter that allows conversion from the Open Document Format
+    (ODF) to translation files (PO).<br/>
+    <br/>
+    The test suite is under the
+    <a href="http://creativecommons.org/licenses/by/3.0/"> Creative Commons
+      Attribution 3.0</a> license as a derivative work based on the
+    <a href="http://develop.opendocumentfellowship.com/testsuite/">
+      OpenDocument Fellowship test suite</a> which is under the
+    <a href="http://develop.opendocumentfellowship.com/testsuite/LICENSE.html">
+      Creative Commons Attribution 2.5</a> license
+    (<a href="http://creativecommons.org/licenses/by/2.5/">C.C. BY 2.5 licence</a>).
+  </p>
+  <hr /><br />
+  <h2>${name}</h2>
+  <div id="breadcrumbs">
+    <label>Location:</label>
+    <span stl:repeat="dest breadcrumb">/<a href="${dest/link}">${dest/name}</a></span>
+  </div>
+  ${body}
+</stl:block>

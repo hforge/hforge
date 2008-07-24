@@ -1,0 +1,25 @@
+/**************************************************************************
+ * Breadcrumbs */
+#breadcrumbs {
+  font-size: smaller;
+}
+
+#breadcrumbs span {
+  color: #888a85;
+}
+
+/**************************************************************************
+ * PO Page */
+p#preformated {
+  padding: 1em;
+  border: 1px dashed #729fcf;
+  background: #fafafa;
+}
+
+#pokey {
+  color: black;
+}
+
+#povalue {
+  color: gray;
+}

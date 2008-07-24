@@ -38,6 +38,20 @@ div#wrapper {
   width: 100%;
 }
 
+hr {
+  border: 0pt none;
+  color: black;
+  background-color: black;
+  height: 1px;
+}
+
+#message {
+  margin: 3px;
+  padding: 3px 0 3px 24px;
+  border: 2px solid #000;
+  background: #fcaf3e url(../images/message.png) left center no-repeat;
+}
+
 /**************************************************************************
  * Header *
  **************************************************************************/
@@ -61,10 +75,15 @@ div#body {
   padding: 15px;
 }
 
+h2#whatsnew {
+  color: red;
+}
+
 
 /**************************************************************************
  * Column Left */
 #columnleft {
+  vertical-align: top;
   width: 522px;
 }
 
@@ -76,6 +95,7 @@ div#body {
 /**************************************************************************
  * Column Right */
 #columnright {
+  vertical-align: top;
   padding-left: 30px;
   width: 261px;
 }
@@ -118,4 +138,23 @@ a#banner_localizer:hover {
 a#banner_localizer img {
   margin: 0px 6px 0px 0px;
   padding: 0px;
+}
+
+
+/**************************************************************************
+ * Projects Page */
+#project {
+  width:600px;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+#h1_title h1 {
+  border-bottom:2px solid #638FBD;
+}
+
+#project h3 {
+  border-bottom:1px solid #638FBD;
 }

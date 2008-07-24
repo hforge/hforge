@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <table border="0">
+    <tbody>
+      <tr stl:repeat="project projects">
+        <td id="project" valign="top">
+          <h3>
+            <a href="${project/url}">${project/title}</a>
+          </h3>
+          ${project/description}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</stl:block>
