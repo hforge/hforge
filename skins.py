@@ -33,8 +33,8 @@ class Skin(BaseSkin):
     def build_namespace(self, context):
         namespace = BaseSkin.build_namespace(self, context)
         # h1 Title
-        h1_title = context.object.get_property('title')
-        namespace['h1_title'] = h1_title
+        site_root = context.object.get_site_root()
+        namespace['h1_title'] = site_root.get_property('title')
         # Right Column
         site_root = context.object.get_site_root()
         try:
