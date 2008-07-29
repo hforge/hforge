@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from os.path import expanduser
+
 # Import from itools
 from itools import vfs
 from itools.datatypes import String
@@ -30,7 +33,8 @@ from ikaaro.website import WebSite
 
 
 # ODF i18n Testsuite location
-root_path = Path('/home/elbichon/itaapy/sandboxes/odf-i18n-tests/documents')
+root_path = expanduser('~/sandboxes/odf-i18n-tests/documents')
+root_path = Path(root_path)
 
 
 
