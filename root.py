@@ -94,30 +94,20 @@ class Root(BaseRoot):
     projects__label__ = u'Projects'
     projects__title__ = u'Projects'
     def projects(self, context):
-        root = context.root
-        infos = []
-        project_titles = []
-        projects_dict = {}
-        language = self.get_content_language(context)
-        projects = root.search_objects(object_class=WebSite)
+        # Search
+        projects = [
+            {'url': x.name,
+             'title': x.get_property('title'),
+             'description': x.get_property('description')}
+            for x in self.search_objects(object_class=WebSite)
+        ]
+
         # Sort
-        for project in projects:
-            title = project.get_property('title', language=language)
-            project_titles.append(title)
-            projects_dict[title] = project
-        project_titles.sort(key=unicode.lower)
-        # Build namespace
-        for title in project_titles:
-            info = {}
-            info['title'] = title
-            info['url'] = title.lower().replace(' ', '-')
-            project = projects_dict[title]
-            description = project.get_property('description',
-                                               language=language)
-            info['description'] = description
-            infos.append(info)
+        projects.sort(lambda x, y: cmp(x['title'].lower(), y['title'].lower()))
+
         namespace = {}
-        namespace['projects'] = infos
+        namespace['projects'] = projects
+
         template = self.get_object('/ui/hforge/Root_projects.xml')
         return stl(template, namespace)
 
