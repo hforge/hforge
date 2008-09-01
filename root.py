@@ -18,12 +18,14 @@
 from datetime import date
 
 # Import from itools
-from itools.catalog import EqQuery
 from itools.datatypes import Email, String
+from itools.gettext import MSG
 from itools.stl import stl
-from itools.web import FormError
+from itools.web import FormError, STLView, BaseForm
+from itools.xapian import EqQuery
 
 # Import from ikaaro
+from ikaaro.folder_views import FolderBrowseContent, FolderLastChanges
 from ikaaro.registry import register_object_class
 from ikaaro.root import Root as BaseRoot
 from ikaaro.website import WebSite
@@ -32,6 +34,9 @@ from ikaaro.website import WebSite
 from news import News
 
 
+###########################################################################
+# Views
+###########################################################################
 def format_date(day):
     if day > 3 and day < 14:
         return '%b %dth %Y'
@@ -46,80 +51,67 @@ def format_date(day):
         return '%b %dth %Y'
 
 
+class RootView(STLView):
 
-class Root(BaseRoot):
-    class_id = 'hforge.org'
-    class_title = 'HForge'
-    class_skin = 'ui/hforge'
+    access = True
+    title = MSG(u'View')
+    template = '/ui/hforge/Root_view.xml'
 
-    browse_content__access__ = 'is_allowed_to_edit'
-    last_changes__access__ = 'is_allowed_to_edit'
-
-
-    GET__access__ = True
-    def GET(self, context):
-        return context.uri.resolve2(';view')
-
-
-    view__access__ = True
-    view__label__ = u'View'
-    view__title__ = u'View'
-    def view(self, context):
-        root = context.root
-        # Find documents
+    def get_namespace(self, resource, context):
+        # Search news
         query = EqQuery('format', News.class_id)
-        results = context.root.search(query)
+        results = resource.search(query)
         documents = results.get_documents(sort_by='date', reverse=True)
         # Browse metadatas
         lines = []
         for news in documents:
-            if news.workflow_state == 'public':
-                line = {}
-                line['title'] = news.title
-                year, month, day = news.date.split('-')
-                date_object = date(int(year), int(month), int(day))
-                format = format_date(date_object.day)
-                formated_date = date_object.strftime(format)
-                line['date'] = formated_date
-                handler = root.get_object(news.abspath).handler
-                html = handler.events
-                line['html'] = html
-                lines.append(line)
-        namespace = {'objects': lines}
-        template = self.get_object('/ui/hforge/Root_view.xml')
-        return stl(template, namespace)
+            if news.workflow_state != 'public':
+                continue
+            year, month, day = news.date.split('-')
+            date_object = date(int(year), int(month), int(day))
+            format = format_date(date_object.day)
+            formated_date = date_object.strftime(format)
+            html = resource.get_resource(news.abspath).handler.events
+            lines.append({
+                'title': news.title, 'date': formated_date, 'html': html})
+        # Ok
+        return {'objects': lines}
 
 
-    projects__access__ = True
-    projects__label__ = u'Projects'
-    projects__title__ = u'Projects'
-    def projects(self, context):
+
+class RootProjects(STLView):
+
+    access = True
+    title = MSG(u'Projects')
+    template = '/ui/hforge/Root_projects.xml'
+
+    def get_namespace(self, resource, context):
         # Search
         projects = [
             {'url': x.name,
              'title': x.get_property('title'),
              'description': x.get_property('description')}
-            for x in self.search_objects(object_class=WebSite)
+            for x in resource.search_objects(object_class=WebSite)
         ]
-
         # Sort
         projects.sort(lambda x, y: cmp(x['title'].lower(), y['title'].lower()))
-
-        namespace = {}
-        namespace['projects'] = projects
-
-        template = self.get_object('/ui/hforge/Root_projects.xml')
-        return stl(template, namespace)
+        # Ok
+        return {'projects': projects}
 
 
-    subscribe__access__ = True
-    def subscribe(self, context):
-        # Check form data
-        schema = {'email': Email(mandatory=True),
-                  'list': String(mandatory=True)}
-        try:
-            form = context.check_form_input(schema)
-        except FormError, error:
+
+class RootSubscribe(BaseForm):
+
+    access = True
+    schema = {
+        'email': Email(mandatory=True),
+        'list': String(mandatory=True)}
+
+
+    def GET(self, resource, context):
+        # FIXME
+        print context.message
+        if error:
             messages = []
             if 'email' in error.missing:
                 messages.append('Please type your email address.')
@@ -129,21 +121,46 @@ class Root(BaseRoot):
                 message = 'Please select the mailing list you want to join.'
                 messages.append(message)
 
+            template = '/ui/hforge/subscribe_error.xml'
             namespace = {'messages': messages}
+        else:
+            template = '/ui/hforge/subscribe_ok.xml'
+            namespace = {}
 
-            handler = self.get_object('/ui/hforge/subscribe_error.xml')
-            return stl(handler, namespace)
+        # Ok
+        handler = resource.get_resource(template)
+        return stl(handler, namespace)
 
-        # Subscribe
+
+    def action(self, resource, context, form):
         email = form['email']
-        to_addr = '%s-subscribe-%s@hforge.org' % (form['list'],
-                                                  email.replace('@', '='))
-        context.root.send_email(to_addr, u'Subscribe', email,
-                                subject_with_host=False)
 
-        handler = self.get_object('/ui/hforge/subscribe_ok.xml')
-        return stl(handler)
+        to_addr = '%s-subscribe-%s@hforge.org'
+        to_addr = to_addr % (form['list'], email.replace('@', '='))
 
+        root = resource
+        root.send_email(to_addr, u'Subscribe', email, subject_with_host=False)
+
+
+
+###########################################################################
+# Resource
+###########################################################################
+class Root(BaseRoot):
+
+    class_id = 'hforge.org'
+    class_title = MSG(u'HForge')
+    class_skin = 'ui/hforge'
+    class_views = ['view'] + BaseRoot.class_views
+
+    # Restrict access to the folder's views
+    browse_content = FolderBrowseContent(access='is_allowed_to_edit')
+    last_changes = FolderLastChanges(access='is_allowed_to_edit')
+
+    # Custom Views
+    view = RootView()
+    projects = RootProjects()
+    subscribe = RootSubscribe()
 
 
 ###########################################################################

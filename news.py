@@ -18,10 +18,12 @@
 from datetime import date, datetime
 
 # Import from itools
-from itools.catalog import KeywordField
-from itools.datatypes import Date, DateTime, Unicode
+from itools.datatypes import Date, DateTime, String, Unicode
 from itools.handlers import checkid
+from itools.gettext import MSG
 from itools.stl import stl
+from itools.web import STLView, STLForm
+from itools.xapian import KeywordField
 from itools.xml import XMLError, XMLParser
 
 # Import from ikaaro
@@ -32,17 +34,97 @@ from ikaaro.messages import *
 from ikaaro.registry import register_object_class
 
 
+
 ###########################################################################
-# News
+# Views
+###########################################################################
+class NewsView(STLView):
+
+    access = 'is_allowed_to_view'
+    title = MSG(u'View')
+    template = '/ui/hforge/News_view.xml'
+
+    def get_namespace(self, resource, context):
+        language = resource.get_content_language(context)
+        return {
+            'title': resource.get_property('title', language=language),
+            'html': resource.handler.events,
+            'date': resource.get_property('date'),
+        }
+
+
+
+class NewsEdit(STLForm):
+
+    access = 'is_allowed_to_edit'
+    title = MSG(u'Edit')
+    template = '/ui/hforge/News_edit.xml'
+    schema = {
+        'timestamp': DateTime,
+        'title': Unicode(mandatory=True),
+        'date': Date,
+        'html': String,
+    }
+
+    def get_namespace(self, resource, context):
+        language = resource.get_content_language(context)
+        widget = DateWidget('date')
+        release_date = resource.get_property('date')
+
+        return {
+            'action': ';edit',
+            'submit': MSG(u'Change'),
+            'title': resource.get_property('title', language=language),
+            'date': widget.to_html(Date, release_date),
+            'html': resource.get_rte(context, 'html', resource.handler.events,
+                                     template='/ui/hforge/rte.xml'),
+            'class_id': resource.class_id,
+            'class_title': resource.class_title,
+            'timestamp': DateTime.encode(datetime.now()),
+        }
+
+
+    def action(self, resource, context, form):
+        # Check the timestamp
+        timestamp = form['timestamp']
+        if timestamp is None:
+            context.message = MSG_EDIT_CONFLICT
+            return
+        document = resource.get_epoz_document()
+        if document.timestamp is not None and timestamp < document.timestamp:
+            context.message = MSG_EDIT_CONFLICT
+            return
+        # Check the html is good
+        html = form['html']
+        try:
+            html = list(XMLParser(html))
+        except XMLError:
+            context.message = MSG(u'Invalid HTML code.')
+            return
+
+        # Title
+        title = form['title']
+        language = resource.get_content_language(context)
+        resource.set_property('title', title, language=language)
+        # Date
+        release_date = form['date']
+        resource.set_property('date', release_date)
+        # Body
+        resource.handler.events = html
+
+        # Ok
+        context.message = MSG_CHANGES_SAVED
+
+
+###########################################################################
+# Resource
 ###########################################################################
 class News(WebPage):
+
     class_id = 'news'
-    class_title = u'News'
-    class_description = u'Create and publich News'
-    class_views = [['view'],
-                   ['edit_form'],
-                   ['state_form'],
-                   ['history_form']]
+    class_title = MSG(u'News')
+    class_description = MSG(u'Create and publich News')
+    class_views = ['view', 'edit', 'state_form', 'history_form']
 
 
     @classmethod
@@ -69,29 +151,29 @@ class News(WebPage):
     def new_instance_form(cls, context):
         root = context.root
         # Build the namespace
-        namespace = {}
-        namespace['action'] = ';new_resource'
-        namespace['submit'] = u'Add'
-        get = context.get_form_value
-        namespace['title'] = get('title', type=Unicode)
-        namespace['html'] = root.get_rte(context, 'html', None,
-                                         template='/ui/hforge/rte.xml')
-        widget = DateWidget('date')
-        release_date = get('date', date.today().isoformat(), type=Date)
-        namespace['date'] = widget.to_html(Date, release_date)
-        namespace['class_id'] = cls.class_id
-        namespace['class_title'] = cls.gettext(cls.class_title)
-        namespace['timestamp'] = DateTime.encode(datetime.now())
-        template = root.get_object('/ui/hforge/News_edit.xml')
+        default = date.today().isoformat()
+        release_date = context.get_form_value('date', Date, default=default)
+        namespace = {
+            'action': ';new_resource',
+            'submit': MSG(u'Add'),
+            'title': context.get_form_value('title', Unicode),
+            'html': root.get_rte(context, 'html', None,
+                                 template='/ui/hforge/rte.xml'),
+            'date': DateWidget('date').to_html(Date, release_date),
+            'class_id': cls.class_id,
+            'class_title': cls.class_title.gettext(),
+            'timestamp': DateTime.encode(datetime.now()),
+        }
+
+        template = root.get_resource('/ui/hforge/News_edit.xml')
         return stl(template, namespace)
 
 
     @staticmethod
     def new_instance(cls, container, context):
-        get = context.get_form_value
-        title = get('title', type=Unicode)
-        html = get('html')
-        release_date = get('date', type=Date)
+        title = context.get_form_value('title', Unicode)
+        html = context.get_form_value('html')
+        release_date = context.get_form_value('date', Date)
 
         # Check the name
         name = title.strip()
@@ -103,7 +185,7 @@ class News(WebPage):
             return context.come_back(MSG_BAD_NAME)
 
         # Check the name is free
-        if container.has_object(name):
+        if container.has_resource(name):
             return context.come_back(MSG_NAME_CLASH)
 
         # Make Object
@@ -118,69 +200,8 @@ class News(WebPage):
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
-    view__access__ = 'is_allowed_to_view'
-    view__label__ = u'View'
-    view__title__ = u'View'
-    def view(self, context):
-        language = self.get_content_language(context)
-        namespace = {}
-        namespace['title'] = self.get_property('title', language=language)
-        namespace['html'] = self.handler.events
-        namespace['date'] = self.get_property('date')
-        template = self.get_object('/ui/hforge/News_view.xml')
-        return stl(template, namespace)
-
-
-    edit_form__access__ = 'is_allowed_to_edit'
-    edit_form__label__ = u'Edit'
-    edit_form__icon__ = 'edit.png'
-    def edit_form(self, context):
-        language = self.get_content_language(context)
-        namespace = {}
-        namespace['action'] = ';edit'
-        namespace['submit'] = u'Change'
-        namespace['title'] = self.get_property('title', language=language)
-        widget = DateWidget('date')
-        release_date = self.get_property('date')
-        namespace['date'] = widget.to_html(Date, release_date)
-        namespace['html'] = \
-            self.get_rte(context, 'html',
-                         self.handler.events,
-                         template='/ui/hforge/rte.xml')
-        namespace['class_id'] = self.class_id
-        namespace['class_title'] = self.class_title
-        namespace['timestamp'] = DateTime.encode(datetime.now())
-
-        template = self.get_object('/ui/hforge/News_edit.xml')
-        return stl(template, namespace)
-
-
-    edit__access__ = 'is_allowed_to_edit'
-    def edit(self, context, sanitize=False):
-        get = context.get_form_value
-        # Timestamp
-        timestamp = get('timestamp', type=DateTime)
-        if timestamp is None:
-            return context.come_back(MSG_EDIT_CONFLICT)
-        document = self.get_epoz_document()
-        if document.timestamp is not None and timestamp < document.timestamp:
-            return context.come_back(MSG_EDIT_CONFLICT)
-        # Metadata
-        title = get('title', type=Unicode)
-        if not title.strip():
-            return context.come_back(MSG_NAME_MISSING)
-        release_date = get('date', type=Date)
-        html = get('html')
-        language = self.get_content_language(context)
-        self.set_property('title', title, language=language)
-        self.set_property('date', release_date)
-        # Body
-        try:
-            self.handler.events = list(XMLParser(html))
-        except XMLError:
-            return context.come_back(u'Invalid HTML code.')
-        return context.come_back(MSG_CHANGES_SAVED)
-
+    view = NewsView()
+    edit = NewsEdit()
 
 
 ###########################################################################

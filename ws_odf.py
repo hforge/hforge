@@ -20,14 +20,14 @@ from os.path import expanduser
 # Import from itools
 from itools import vfs
 from itools.datatypes import String
-from itools.gettext import POFile
+from itools.gettext import MSG, POFile
 from itools.handlers import ConfigFile
 from itools.handlers import get_handler, Database
 from itools.stl import stl
 from itools.uri import Path
+from itools.web import BaseView, MSG_MISSING_OR_INVALID
 
 # Import from ikaaro
-from ikaaro.messages import MSG_MISSING_OR_INVALID
 from ikaaro.registry import register_object_class, register_website
 from ikaaro.website import WebSite
 
@@ -37,25 +37,23 @@ root_path = expanduser('~/sandboxes/odf-i18n-tests/documents')
 root_path = Path(root_path)
 
 
+###########################################################################
+# Views
+###########################################################################
+class ODFWSDownload(BaseView):
 
-class ODFWS(WebSite):
-    class_id = 'hforge.org/odf-i18n-tests'
-    class_title = u'i18n Testsuite'
-    class_skin = 'ui/odf-i18n'
+    access = True
+    query_schema = {
+        'path': String,
+    }
 
-
-    GET__access__ = True
-    def GET(self, context):
-        return context.uri.resolve2(';browse_tests')
-
-
-    download__access__ = True
-    def download(self, context):
+    def GET(self, resource, context):
         response = context.response
         # Filename
-        filename = context.get_form_value('path', type=String)
-        if (not filename.startswith('.')) or filename.find('..') >= 0:
+        filename = context.query['path']
+        if filename[0] != '.' or filename.find('..') >= 0:
             return context.come_back(MSG_MISSING_OR_INVALID)
+
         path = root_path.resolve2(filename)
         response.set_header('Content-Disposition',
                             'inline; filename="%s"' % path.get_name())
@@ -67,62 +65,73 @@ class ODFWS(WebSite):
         return resource.to_str()
 
 
-    browse_tests__access__ = True
-    def browse_tests(self, context):
-        str_path = context.get_form_value('path', type=String, default='.')
-        if (not str_path.startswith('.')) or str_path.find('..') >= 0:
-            return context.come_back(message=MSG_MISSING_OR_INVALID,
-                                     goto='./;browse_tests')
+
+class ODFWSBrowseTests(BaseView):
+
+    access = True
+    template = '/ui/odf-i18n/template.xml'
+    query_schema = {
+        'path': String(default='.'),
+    }
+
+
+    def get_namespace(self, resource, context):
+        # Get the path
+        str_path = context.query['path']
+        if str_path[0] != '.' or str_path.find('..') >= 0:
+            goto = './;browse_tests'
+            return context.come_back(MSG_MISSING_OR_INVALID, goto=goto)
         path = Path(str_path)
+
+        # Build the common namespace
+        if path == '.':
+            name = MSG(u'Testsuite Documents')
+        else:
+            name = path.get_name()
+        # Crumbs
+        crumbs = []
+        breadcrumb_path = path
+        while breadcrumb_path != '.':
+            link = './;browse_tests?path=./' + breadcrumb_path.__str__()
+            crumbs.append({
+                'name': breadcrumb_path.get_name(),
+                'link': link})
+            # Next
+            breadcrumb_path = breadcrumb_path.resolve2('..')
+        crumbs.append({'name': 'Test Suite',
+                       'link': './;browse_tests?path=.'})
+        crumbs.reverse()
+        common_ns = {
+            'h1_title': resource.class_title,
+            'name': name,
+            'breadcrumb': crumbs,
+        }
+
+        # Get the resource
         uri = root_path.resolve2(path)
         resource = get_handler(uri)
         resource.database = Database()
 
-        # Build common namespace
-        common_ns = {}
-        common_ns['h1_title'] = self.class_title
-        if path == '.':
-            common_ns['name'] = u'Testsuite Documents'
-        else:
-            common_ns['name'] = path.get_name()
-        crumbs = []
-        breadcrumb_path = path
-        while breadcrumb_path != '.':
-            crumb = {}
-            crumb['name'] = breadcrumb_path.get_name()
-            link = './;browse_tests?path=./' + breadcrumb_path.__str__()
-            crumb['link'] = link
-            crumbs.append(crumb)
-            breadcrumb_path = breadcrumb_path.resolve2('..')
-        crumb = {}
-        crumb['name'] = 'Test Suite'
-        crumb['link'] = './;browse_tests?path=.'
-        crumbs.append(crumb)
-        crumbs.reverse()
-        common_ns['breadcrumb'] = crumbs
-
-        namespace = {}
         # View PO file
+        root = context.root
         if isinstance(resource, POFile):
-            msgs = []
-            for message in resource.get_messages():
-                msg = {}
-                msg['id'] = '" "'.join(message.msgid)
-                msg['str'] = '" "'.join(message.msgstr)
-                msgs.append(msg)
-            namespace['messages'] = msgs
-            template = self.get_object('/ui/odf-i18n/ODFWS_view_po.xml')
+            msgs = [
+                {'id': '" "'.join(item.msgid), 'str': '" "'.join(item.msgstr)}
+                for item in resource.get_messages()
+            ]
+
+            namespace = {'messages': msgs}
+            template = root.get_resource('/ui/odf-i18n/ODFWS_view_po.xml')
             common_ns['body'] = stl(template, namespace)
-            common_template = self.get_object('/ui/odf-i18n/template.xml')
-            return stl(common_template, common_ns)
+            return common_ns
 
         # Browse Folders
         files = []
         folder_is_test = False
         childs = resource.get_handler_names()
         childs.sort()
-        an_handler = root_path.resolve2(str_path + '/' + childs[0])
-        if vfs.is_folder(an_handler):
+        a_handler = root_path.resolve2(str_path + '/' + childs[0])
+        if vfs.is_folder(a_handler):
             # Folder
             for child_name in childs:
                 child_link = str_path + '/' + child_name
@@ -130,47 +139,62 @@ class ODFWS(WebSite):
                 file['child_name'] = child_name
                 file['to_child'] = ';browse_tests?path=%s' % child_link
                 files.append(file)
-            namespace['content'] = files
-            template = self.get_object('/ui/odf-i18n/ODFWS_browse_folder.xml')
+            namespace = {'content': files}
+            template = root.get_resource('/ui/odf-i18n/ODFWS_browse_folder.xml')
             common_ns['body'] = stl(template, namespace)
-            common_template = self.get_object('/ui/odf-i18n/template.xml')
-            return stl(common_template, common_ns)
-        else:
-            # Test Folder
-            has_metadata = False
-            for child_name in childs:
-                child_link = str_path + '/' + child_name
-                # Metadatas File
-                if child_name.endswith('.conf'):
-                    abs_path = root_path.resolve2(child_link)
-                    setup_file = ConfigFile(abs_path)
-                    namespace['title'] = setup_file.get_value('title')
-                    description = setup_file.get_value('description')
-                    namespace['description'] = description
-                    reference = setup_file.get_value('reference')
-                    namespace['reference'] = reference
-                    url_reference = setup_file.get_value('url_reference')
-                    namespace['url_reference'] = url_reference
-                    has_metadata = True
-                    continue
-                # Test Files
-                file = {}
-                file['child_name'] = child_name
-                file['view'] = None
-                file['to_child'] = ';download?path=%s' % child_link
-                if child_name.endswith('.po'):
-                    file['view'] = ';browse_tests?path=%s' % child_link
-                files.append(file)
-            namespace['content'] = files
+            return common_ns
 
-            if has_metadata:
-                template_path = '/ui/odf-i18n/ODFWS_browse_test.xml'
-            else:
-                template_path = '/ui/odf-i18n/ODFWS_browse_test_files.xml'
-            template = self.get_object(template_path)
-            common_ns['body'] = stl(template, namespace)
-            common_template = self.get_object('/ui/odf-i18n/template.xml')
-            return stl(common_template, common_ns)
+        # Test Folder
+        namespace = {}
+        has_metadata = False
+        for child_name in childs:
+            child_link = str_path + '/' + child_name
+            # Metadatas File
+            if child_name.endswith('.conf'):
+                abs_path = root_path.resolve2(child_link)
+                setup_file = ConfigFile(abs_path)
+                namespace['title'] = setup_file.get_value('title')
+                description = setup_file.get_value('description')
+                namespace['description'] = description
+                reference = setup_file.get_value('reference')
+                namespace['reference'] = reference
+                url_reference = setup_file.get_value('url_reference')
+                namespace['url_reference'] = url_reference
+                has_metadata = True
+                continue
+            # Test Files
+            file = {}
+            file['child_name'] = child_name
+            file['view'] = None
+            file['to_child'] = ';download?path=%s' % child_link
+            if child_name.endswith('.po'):
+                file['view'] = ';browse_tests?path=%s' % child_link
+            files.append(file)
+        namespace['content'] = files
+
+        if has_metadata:
+            template_path = '/ui/odf-i18n/ODFWS_browse_test.xml'
+        else:
+            template_path = '/ui/odf-i18n/ODFWS_browse_test_files.xml'
+        template = root.get_resource(template_path)
+        common_ns['body'] = stl(template, namespace)
+        return common_ns
+
+
+
+###########################################################################
+# Resource
+###########################################################################
+class ODFWS(WebSite):
+
+    class_id = 'hforge.org/odf-i18n-tests'
+    class_title = MSG(u'i18n Testsuite')
+    class_skin = 'ui/odf-i18n'
+    class_views = ['browse_tests'] + WebSite.class_views
+
+    # Views
+    download = ODFWSDownload()
+    browse_tests = ODFWSBrowseTests()
 
 
 

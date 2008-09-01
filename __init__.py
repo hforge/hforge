@@ -24,4 +24,4 @@ import news
 import ws_odf
 
 # Make the product version available to Python code
-__version__ = get_version(globals())
+__version__ = get_version()

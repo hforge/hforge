@@ -16,6 +16,7 @@
 
 # Import from itools
 from itools import get_abspath
+from itools.gettext import MSG
 
 # Import from ikaaro
 from ikaaro.skins import register_skin, Skin as BaseSkin
@@ -24,24 +25,22 @@ from ikaaro.skins import register_skin, Skin as BaseSkin
 class Skin(BaseSkin):
 
     def get_template_title(self, context):
-        here = context.object
-        if here is None:
-            return u'404 Not Found'
-        return here.gettext("%s") % here.get_title()
+        here = context.resource
+        return here.get_title()
 
 
     def build_namespace(self, context):
         namespace = BaseSkin.build_namespace(self, context)
         # h1 Title
-        site_root = context.object.get_site_root()
+        site_root = context.resource.get_site_root()
         namespace['h1_title'] = site_root.get_property('title')
         # Right Column
-        site_root = context.object.get_site_root()
         try:
-            column_obj = site_root.get_object('columnright')
-            columnright = column_obj.get_handler().events
+            column_obj = site_root.get_resource('columnright')
         except LookupError:
             columnright = None
+        else:
+            columnright = column_obj.get_handler().events
         namespace['column'] = columnright
         return namespace
 
@@ -51,11 +50,11 @@ class Skin(BaseSkin):
 # Register Skin
 ###########################################################################
 # hforge skin
-hforge_path = get_abspath(globals(), 'ui/hforge')
+hforge_path = get_abspath('ui/hforge')
 hforge_skin = Skin(hforge_path)
 register_skin('hforge', hforge_skin)
 
 # odf-i18n skin
-hforge_path = get_abspath(globals(), 'ui/odf-i18n')
+hforge_path = get_abspath('ui/odf-i18n')
 hforge_skin = Skin(hforge_path)
 register_skin('odf-i18n', hforge_skin)
