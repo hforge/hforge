@@ -6,6 +6,9 @@
 <head>
   <title>${title}</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <!--
+  <link type="text/css" rel="stylesheet" href="../aruni/aruni.css" />
+  -->
   <link type="text/css" rel="stylesheet" href="../wiki/style.css" />
   <link type="text/css" rel="stylesheet" href="style.css" />
   <link type="text/css" rel="stylesheet" href="../odf-i18n/style.css" />
@@ -16,9 +19,12 @@
       <a href="/;view">Home</a> &nbsp;
       <a href="/;projects">Projects</a> &nbsp;
       <a href="/docs">Documentation</a> &nbsp;
-      <a href="/community">Community</a>
+      <a href="/community">Community</a> &nbsp;
+      <a href="/;login" id="top_menu_login" stl:if="not user/info">Login</a>
+      <a href="/;logout" id="top_menu_logout" stl:if="user/info">Logout</a>
     </div>
     <div id="body">
+      <stl:block stl:if="user/info">${location}</stl:block>
       <div id="message" stl:if="message">${message}</div>
       <table border ="0" cellpadding="0" cellspacing="0">
         <tbody>

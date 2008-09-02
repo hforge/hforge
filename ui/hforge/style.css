@@ -58,12 +58,25 @@ hr {
 #header {
   background: #729fcf url(images/logo2.png) no-repeat bottom left;
   color: #ffffff;
-  padding: 40px 2px 4px 350px;
-  text-align: left;
+  padding: 40px 2px 5px 330px;
 }
 
 #header * {
   color: #ffffff;
+}
+
+#header #top_menu_login {
+  background-image: url(/ui/icons/16x16/lock.png);
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 18px;
+}
+
+#header #top_menu_logout {
+  background-image: url(/ui/icons/16x16/action_logout.png);
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 18px;
 }
 
 
