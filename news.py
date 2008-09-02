@@ -32,12 +32,68 @@ from ikaaro.forms import DateWidget
 from ikaaro.html import WebPage
 from ikaaro.messages import *
 from ikaaro.registry import register_object_class
+from ikaaro.views import NewInstanceForm
 
 
 
 ###########################################################################
 # Views
 ###########################################################################
+class NewsNewInstance(NewInstanceForm):
+
+    access = 'is_allowed_to_add'
+    template = '/ui/hforge/News_edit.xml'
+    schema = {
+        'title': Unicode(mandatory=True),
+        'html': String,
+        'date': Date,
+    }
+
+    def get_namespace(self, resource, context):
+        root = context.root
+        # Build the namespace
+        default = date.today().isoformat()
+        release_date = context.get_form_value('date', Date, default=default)
+        return {
+            'action': ';new_resource?type=%s' % News.class_id,
+            'submit': MSG(u'Add'),
+            'title': context.get_form_value('title', Unicode),
+            'html': root.get_rte(context, 'html', None,
+                                 template='/ui/hforge/rte.xml'),
+            'date': DateWidget('date').to_html(Date, release_date),
+            'class_title': News.class_title.gettext(),
+            'timestamp': DateTime.encode(datetime.now()),
+        }
+
+
+    def action(self, resource, context, form):
+        title = form['title']
+        html = form['html']
+        release_date = form['date']
+
+        name = checkid(title)
+        if name is None:
+            context.message = MSG_BAD_NAME
+            return
+
+        # Check the name is free
+        if resource.has_resource(name):
+            context.message = MSG_NAME_CLASH
+            return
+
+        # Make Object
+        language = resource.get_content_language(context)
+        object = News.make_object(News, resource, name, body=html,
+                                  language=language)
+        metadata = object.metadata
+        metadata.set_property('title', title, language=language)
+        metadata.set_property('date', release_date)
+
+        goto = './%s/' % name
+        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
+
+
+
 class NewsView(STLView):
 
     access = 'is_allowed_to_view'
@@ -78,7 +134,6 @@ class NewsEdit(STLForm):
             'date': widget.to_html(Date, release_date),
             'html': resource.get_rte(context, 'html', resource.handler.events,
                                      template='/ui/hforge/rte.xml'),
-            'class_id': resource.class_id,
             'class_title': resource.class_title,
             'timestamp': DateTime.encode(datetime.now()),
         }
@@ -147,59 +202,8 @@ class News(WebPage):
         return indexes
 
 
-    @staticmethod
-    def new_instance_form(cls, context):
-        root = context.root
-        # Build the namespace
-        default = date.today().isoformat()
-        release_date = context.get_form_value('date', Date, default=default)
-        namespace = {
-            'action': ';new_resource',
-            'submit': MSG(u'Add'),
-            'title': context.get_form_value('title', Unicode),
-            'html': root.get_rte(context, 'html', None,
-                                 template='/ui/hforge/rte.xml'),
-            'date': DateWidget('date').to_html(Date, release_date),
-            'class_id': cls.class_id,
-            'class_title': cls.class_title.gettext(),
-            'timestamp': DateTime.encode(datetime.now()),
-        }
-
-        template = root.get_resource('/ui/hforge/News_edit.xml')
-        return stl(template, namespace)
-
-
-    @staticmethod
-    def new_instance(cls, container, context):
-        title = context.get_form_value('title', Unicode)
-        html = context.get_form_value('html')
-        release_date = context.get_form_value('date', Date)
-
-        # Check the name
-        name = title.strip()
-        if not name:
-            return context.come_back(MSG_NAME_MISSING)
-
-        name = checkid(name)
-        if name is None:
-            return context.come_back(MSG_BAD_NAME)
-
-        # Check the name is free
-        if container.has_resource(name):
-            return context.come_back(MSG_NAME_CLASH)
-
-        # Make Object
-        language = container.get_content_language(context)
-        object = cls.make_object(cls, container, name, body=html,
-                                 language=language)
-        metadata = object.metadata
-        metadata.set_property('title', title, language=language)
-        metadata.set_property('date', release_date)
-
-        goto = './%s/;%s' % (name, object.get_firstview())
-        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
-
-
+    # Views
+    new_instance = NewsNewInstance()
     view = NewsView()
     edit = NewsEdit()
 

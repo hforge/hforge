@@ -15,9 +15,7 @@
       </dd>
       <dl><label for="date">Date</label></dl>
       <dd>
-        <p>
-          ${date}
-        </p>
+        <p>${date}</p>
       </dd>
     </dl>
     <label for="html">Description</label>
@@ -25,7 +23,6 @@
       ${html}
     </p>
     <p>
-      <input type="hidden" name="class_id" value="${class_id}" />
       <input type="hidden" name="timestamp" value="${timestamp}" />
       <input type="submit" value="${submit}" class="button_ok"/>
     </p>
