@@ -91,7 +91,7 @@ class RootProjects(STLView):
             {'url': x.name,
              'title': x.get_property('title'),
              'description': x.get_property('description')}
-            for x in resource.search_objects(object_class=WebSite)
+            for x in resource.search_resources(cls=WebSite)
         ]
         # Sort
         projects.sort(lambda x, y: cmp(x['title'].lower(), y['title'].lower()))
