@@ -26,7 +26,7 @@ from itools.xapian import EqQuery
 
 # Import from ikaaro
 from ikaaro.folder_views import FolderBrowseContent, FolderLastChanges
-from ikaaro.registry import register_object_class
+from ikaaro.registry import register_resource_class
 from ikaaro.root import Root as BaseRoot
 from ikaaro.website import WebSite
 
@@ -166,4 +166,4 @@ class Root(BaseRoot):
 ###########################################################################
 # Register
 ###########################################################################
-register_object_class(Root)
+register_resource_class(Root)

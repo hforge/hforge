@@ -28,7 +28,7 @@ from itools.uri import Path
 from itools.web import BaseView, MSG_MISSING_OR_INVALID
 
 # Import from ikaaro
-from ikaaro.registry import register_object_class, register_website
+from ikaaro.registry import register_resource_class, register_website
 from ikaaro.website import WebSite
 
 
@@ -201,5 +201,5 @@ class ODFWS(WebSite):
 ###########################################################################
 # Register
 ###########################################################################
-register_object_class(ODFWS)
+register_resource_class(ODFWS)
 register_website(ODFWS)

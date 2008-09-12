@@ -31,7 +31,7 @@ from ikaaro.folder import Folder
 from ikaaro.forms import DateWidget
 from ikaaro.html import WebPage
 from ikaaro.messages import *
-from ikaaro.registry import register_object_class
+from ikaaro.registry import register_resource_class
 from ikaaro.views import NewInstanceForm
 
 
@@ -211,5 +211,5 @@ class News(WebPage):
 ###########################################################################
 # Register
 ###########################################################################
-register_object_class(News)
+register_resource_class(News)
 Folder.register_document_type(News)
