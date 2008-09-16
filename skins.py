@@ -31,10 +31,8 @@ class Skin(BaseSkin):
 
     def build_namespace(self, context):
         namespace = BaseSkin.build_namespace(self, context)
-        # h1 Title
-        site_root = context.resource.get_site_root()
-        namespace['h1_title'] = site_root.get_property('title')
         # Right Column
+        site_root = context.resource.get_site_root()
         try:
             column_obj = site_root.get_resource('columnright')
         except LookupError:

@@ -85,6 +85,11 @@ class RootProjects(STLView):
     title = MSG(u'Projects')
     template = '/ui/hforge/Root_projects.xml'
 
+
+    def get_page_title(self, resource, context):
+        return self.title
+
+
     def get_namespace(self, resource, context):
         # Search
         projects = [
@@ -152,6 +157,9 @@ class Root(BaseRoot):
     class_title = MSG(u'HForge')
     class_skin = 'ui/hforge'
     class_views = ['view'] + BaseRoot.class_views
+
+    def get_page_title(self):
+        return None
 
     # Restrict access to the folder's views
     browse_content = FolderBrowseContent(access='is_allowed_to_edit')

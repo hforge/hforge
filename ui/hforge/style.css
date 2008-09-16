@@ -164,8 +164,8 @@ a:hover {
   text-decoration: none;
 }
 
-#h1_title h1 {
-  border-bottom:2px solid #638FBD;
+h1 {
+  border-bottom: 2px solid #638FBD;
 }
 
 #project h3 {
