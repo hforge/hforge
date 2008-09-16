@@ -25,7 +25,7 @@ from itools.handlers import ConfigFile
 from itools.handlers import get_handler, Database
 from itools.stl import stl
 from itools.uri import Path
-from itools.web import BaseView, MSG_MISSING_OR_INVALID
+from itools.web import BaseView, STLView, MSG_MISSING_OR_INVALID
 
 # Import from ikaaro
 from ikaaro.registry import register_resource_class, register_website
@@ -66,7 +66,7 @@ class ODFWSDownload(BaseView):
 
 
 
-class ODFWSBrowseTests(BaseView):
+class ODFWSBrowseTests(STLView):
 
     access = True
     template = '/ui/odf-i18n/template.xml'
