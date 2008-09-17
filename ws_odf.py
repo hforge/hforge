@@ -37,9 +37,7 @@ root_path = expanduser('~/sandboxes/odf-i18n-tests/documents')
 root_path = Path(root_path)
 
 
-###########################################################################
-# Views
-###########################################################################
+
 class ODFWSDownload(BaseView):
 
     access = True
@@ -69,10 +67,10 @@ class ODFWSDownload(BaseView):
 class ODFWSBrowseTests(STLView):
 
     access = True
+    title = MSG(u'View')
     template = '/ui/odf-i18n/template.xml'
     query_schema = {
-        'path': String(default='.'),
-    }
+        'path': String(default='.')}
 
 
     def get_namespace(self, resource, context):
@@ -89,23 +87,22 @@ class ODFWSBrowseTests(STLView):
         else:
             name = path.get_name()
         # Crumbs
+        base = '/%s/;browse_tests' % context.site_root.get_pathto(resource)
+        link = base + '?path=%s'
         crumbs = []
         breadcrumb_path = path
         while breadcrumb_path != '.':
-            link = './;browse_tests?path=./' + breadcrumb_path.__str__()
             crumbs.append({
                 'name': breadcrumb_path.get_name(),
-                'link': link})
+                'link': link % breadcrumb_path})
             # Next
             breadcrumb_path = breadcrumb_path.resolve2('..')
-        crumbs.append({'name': 'Test Suite',
-                       'link': './;browse_tests?path=.'})
+        crumbs.append({'name': 'Test Suite', 'link': link % '.'})
         crumbs.reverse()
         common_ns = {
             'h1_title': resource.class_title,
             'name': name,
-            'breadcrumb': crumbs,
-        }
+            'breadcrumb': crumbs}
 
         # Get the resource
         uri = root_path.resolve2(path)
@@ -117,8 +114,7 @@ class ODFWSBrowseTests(STLView):
         if isinstance(resource, POFile):
             msgs = [
                 {'id': '" "'.join(item.msgid), 'str': '" "'.join(item.msgstr)}
-                for item in resource.get_messages()
-            ]
+                for item in resource.get_messages() ]
 
             namespace = {'messages': msgs}
             template = root.get_resource('/ui/odf-i18n/ODFWS_view_po.xml')
@@ -134,11 +130,10 @@ class ODFWSBrowseTests(STLView):
         if vfs.is_folder(a_handler):
             # Folder
             for child_name in childs:
-                child_link = str_path + '/' + child_name
-                file = {}
-                file['child_name'] = child_name
-                file['to_child'] = ';browse_tests?path=%s' % child_link
-                files.append(file)
+                path = '%s/%s' % (str_path, child_name)
+                files.append({
+                    'child_name': child_name,
+                    'to_child': link % path})
             namespace = {'content': files}
             template = root.get_resource('/ui/odf-i18n/ODFWS_browse_folder.xml')
             common_ns['body'] = stl(template, namespace)
@@ -163,12 +158,13 @@ class ODFWSBrowseTests(STLView):
                 has_metadata = True
                 continue
             # Test Files
-            file = {}
-            file['child_name'] = child_name
-            file['view'] = None
-            file['to_child'] = ';download?path=%s' % child_link
+            file = {
+                'child_name': child_name,
+                'view': None,
+                'to_child': ';download?path=%s' % child_link,
+            }
             if child_name.endswith('.po'):
-                file['view'] = ';browse_tests?path=%s' % child_link
+                file['view'] = '%s?path=%s' % (base, child_link)
             files.append(file)
         namespace['content'] = files
 
@@ -182,9 +178,6 @@ class ODFWSBrowseTests(STLView):
 
 
 
-###########################################################################
-# Resource
-###########################################################################
 class ODFWS(WebSite):
 
     class_id = 'hforge.org/odf-i18n-tests'
