@@ -6,12 +6,20 @@
 <head>
   <title>${title}</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <!-- CSS -->
   <!--
-  <link type="text/css" rel="stylesheet" href="../aruni/aruni.css" />
+  <link type="text/css" rel="stylesheet" stl:repeat="style styles"
+    href="${style}" />
   -->
+  <link type="text/css" rel="stylesheet" href="../bo.css" />
   <link type="text/css" rel="stylesheet" href="../wiki/style.css" />
   <link type="text/css" rel="stylesheet" href="style.css" />
   <link type="text/css" rel="stylesheet" href="../odf-i18n/style.css" />
+
+  <!-- JavaScript -->
+  <script type="text/javascript" stl:repeat="script scripts" src="${script}"
+    />
 </head>
 <body>
   <div id="wrapper">
@@ -25,14 +33,10 @@
     </div>
     <div id="body">
       <stl:block stl:if="user/info">${location}</stl:block>
+      <h1 stl:if="page_title">${page_title}</h1>
+      ${message}
       <table border ="0" cellpadding="0" cellspacing="0">
         <tbody>
-          <tr>
-            <td colspan="2">
-              <h1 stl:if="page_title">${page_title}</h1>
-              <div id="message" stl:if="message">${message}</div>
-            </td>
-          </tr>
           <tr>
             <td id="columnleft">
               ${body}

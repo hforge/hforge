@@ -1,8 +1,5 @@
 body {
   font-family: verdana, arial, helvetica, sans-serif;
-  font-size: 14px;
-  margin: 0px;
-  padding: 0px;
 }
 
 td {
@@ -45,19 +42,13 @@ hr {
   height: 1px;
 }
 
-#message {
-  margin: 3px;
-  padding: 3px 0 3px 24px;
-  border: 2px solid #000;
-  background: #fcaf3e url(../images/message.png) left center no-repeat;
-}
-
 /**************************************************************************
  * Header *
  **************************************************************************/
 #header {
   background: #729fcf url(images/logo2.png) no-repeat bottom left;
   color: #ffffff;
+  font-size: 14px;
   padding: 40px 2px 5px 330px;
 }
 
