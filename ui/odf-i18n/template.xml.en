@@ -30,7 +30,8 @@
   </p>
 
   <h2>Browse the Test Suite</h2>
-  Location: <stl:block stl:repeat="dest breadcrumb">/<a
-  href="${dest/link}">${dest/name}</a></stl:block>
+  Location: <stl:block stl:repeat="item location">/<a href="${item/link}"
+    >${item/name}</a></stl:block>
+
   ${body}
 </stl:block>

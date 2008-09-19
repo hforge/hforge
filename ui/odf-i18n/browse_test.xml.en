@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <dl>
+    <stl:block stl:if="title">
+      <dt>Title:</dt>
+      <dd>${title}</dd>
+      <br />
+    </stl:block>
+    <stl:block stl:if="description">
+      <dt>Description:</dt>
+      <dd>${description}</dd>
+      <br />
+    </stl:block>
+    <dt>Files:</dt>
+    <dd>
+      <stl:block stl:repeat="file content">
+        <a href="${file/to_child}">${file/child_name}</a>
+        <stl:inline stl:if="file/view">(<a href="${file/view}">View</a>)
+        </stl:inline><br />
+      </stl:block>
+    </dd>
+    <br />
+    <stl:block stl:if="reference">
+      <dt>Reference:</dt>
+      <dd>
+        <a href="${url_reference}" stl:omit-tag="not url_reference"
+          >${reference}</a>
+      </dd>
+    </stl:block>
+  </dl>
+</stl:block>
