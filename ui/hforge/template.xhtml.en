@@ -31,8 +31,8 @@
       <a href="${login}" id="top_menu_login" stl:if="not user/info">Login</a>
       <a href="${logout}" id="top_menu_logout" stl:if="user/info">Logout</a>
     </div>
+    <stl:block stl:if="user/info">${location}</stl:block>
     <div id="body">
-      <stl:block stl:if="user/info">${location}</stl:block>
       <h1 stl:if="page_title">${page_title}</h1>
       ${message}
       <table border ="0" cellpadding="0" cellspacing="0">
@@ -43,6 +43,11 @@
             </td>
             <td stl:if="column" id="columnright">
               ${column}
+            </td>
+            <td id="right" valign="top" stl:if="user/info">
+              <stl:block stl:repeat="menu context_menus">
+                ${menu}<br/>
+              </stl:block>
             </td>
           </tr>
         </tbody>

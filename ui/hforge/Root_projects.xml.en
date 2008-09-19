@@ -3,16 +3,13 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <table border="0">
-    <tbody>
-      <tr stl:repeat="project projects">
-        <td id="project" valign="top">
-          <h3>
-            <a href="${project/url}">${project/title}</a>
-          </h3>
-          ${project/description}
-        </td>
-      </tr>
-    </tbody>
-  </table>
+
+  <dl>
+    <stl:block stl:repeat="project projects">
+      <dt><a href="${project/url}">${project/title}</a></dt>
+      <dd>${project/description}</dd>
+      <br/>
+    </stl:block>
+  </dl>
+
 </stl:block>

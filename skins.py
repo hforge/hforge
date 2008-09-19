@@ -31,15 +31,22 @@ class Skin(BaseSkin):
 
     def build_namespace(self, context):
         namespace = BaseSkin.build_namespace(self, context)
+        namespace['column'] = None
+
         # Right Column
-        site_root = context.resource.get_site_root()
+        resource = context.resource
+        if resource is not resource.get_site_root():
+            return namespace
+
+        if context.view is not resource.get_view(None):
+            return namespace
+
         try:
-            column_obj = site_root.get_resource('columnright')
+            column = resource.get_resource('columnright')
         except LookupError:
-            columnright = None
-        else:
-            columnright = column_obj.get_handler().events
-        namespace['column'] = columnright
+            return namespace
+
+        namespace['column'] = column.get_handler().events
         return namespace
 
 

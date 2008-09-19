@@ -3,7 +3,10 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <p>Welcome to hforge.org, the home of <a href="../itools">itools</a> and related projects.</p>
+  <p>
+  Welcome to hforge.org, the home of <a href="../itools">itools</a> and
+  related projects.
+  </p>
   <h2 id="whatsnew">What's new?</h2>
   <stl:block stl:repeat="object objects">
     <h4>${object/title} (${object/date})</h4>

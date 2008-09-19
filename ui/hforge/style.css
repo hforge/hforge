@@ -2,14 +2,9 @@ body {
   font-family: verdana, arial, helvetica, sans-serif;
 }
 
-td {
-  margin: 0px 0px 0px 0px;
-  font-family: verdana, arial, helvetica, sans-serif;
-  font-size: 14px;
-}
-
 h1 {
-  font-size: 1.7em;
+  /*font-size: 1.8em;*/
+  border-bottom: 1px solid #638FBD;
 }
 
 h2 {
@@ -49,7 +44,8 @@ hr {
   background: #729fcf url(images/logo2.png) no-repeat bottom left;
   color: #ffffff;
   font-size: 14px;
-  padding: 40px 2px 5px 330px;
+  padding: 40px 10px 5px 0px;
+  text-align: right;
 }
 
 #header * {
@@ -74,6 +70,10 @@ hr {
 /**************************************************************************
  * Body *
  **************************************************************************/
+#body {
+  font-size: 1.4em;
+}
+
 div#body {
   text-align: left;
   padding: 15px;
@@ -112,53 +112,3 @@ h2#whatsnew {
   color: #555;
 }
 
-
-/**************************************************************************
- * Home Page */
-a.banner {
-  display: block;
-  border: dashed 2px #729fcf;
-  color: #000000;
-  font: normal 15px Verdana, sans-serif;
-  margin: 0px 0px 10px 0px;
-  padding: 5px;
-}
-
-a.banner:hover,
-a.banner:active {
-  background-color: #c2dfff;
-  text-decoration: none;
-}
-
-a#banner_localizer {
-  border-color: #cccc9a;
-}
-
-a#banner_localizer:hover,
-a#banner_localizer:hover {
-  background-color: #ececba;
-}
-
-a#banner_localizer img {
-  margin: 0px 6px 0px 0px;
-  padding: 0px;
-}
-
-
-/**************************************************************************
- * Projects Page */
-#project {
-  width:600px;
-}
-
-a:hover {
-  text-decoration: none;
-}
-
-h1 {
-  border-bottom: 2px solid #638FBD;
-}
-
-#project h3 {
-  border-bottom:1px solid #638FBD;
-}
