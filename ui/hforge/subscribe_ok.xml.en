@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <div xmlns="http://www.w3.org/1999/xhtml">
-  <p>You are going to receive a confirmation email.  Reply it to
-  finish the subscription process.</p>
   <form action="/community" method="get">
-    <input type="submit" value="Finish" />
+    <fieldset>
+      <legend>Subscription</legend>
+      <p>
+      You are going to receive a confirmation email.  Reply it to finish the
+      subscription process.
+      </p>
+      <input type="submit" value="OK" />
+    </fieldset>
   </form>
 </div>

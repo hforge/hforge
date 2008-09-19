@@ -115,26 +115,13 @@ class RootSubscribe(BaseForm):
 
     def GET(self, resource, context):
         # FIXME
-        print context.message
-        if error:
-            messages = []
-            if 'email' in error.missing:
-                messages.append('Please type your email address.')
-            elif 'email' in error.invalid:
-                messages.append('Please type a valid email address.')
-            if 'list' in error.missing:
-                message = 'Please select the mailing list you want to join.'
-                messages.append(message)
-
-            template = '/ui/hforge/subscribe_error.xml'
-            namespace = {'messages': messages}
-        else:
-            template = '/ui/hforge/subscribe_ok.xml'
-            namespace = {}
+        if context.message:
+            return context.come_back(context.message)
 
         # Ok
+        template = '/ui/hforge/subscribe_ok.xml'
         handler = resource.get_resource(template)
-        return stl(handler, namespace)
+        return stl(handler)
 
 
     def action(self, resource, context, form):
