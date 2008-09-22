@@ -26,6 +26,7 @@ from itools.handlers import get_handler, Database
 from itools.stl import stl
 from itools.uri import Path
 from itools.web import BaseView, STLView, MSG_MISSING_OR_INVALID
+from itools.xml import XMLParser
 
 # Import from ikaaro
 from ikaaro.registry import register_resource_class, register_website
@@ -131,6 +132,8 @@ class ODFWSBrowseTests(STLView):
             description = setup.get_value('description')
             reference = setup.get_value('reference')
             url_reference = setup.get_value('url_reference')
+            # Format the description (may contain XML)
+            description = XMLParser(description)
 
         files = []
         for child in children:
