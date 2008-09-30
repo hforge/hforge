@@ -30,8 +30,10 @@
   </p>
 
   <h2>Browse the Test Suite</h2>
+  <p>
   Location: <stl:block stl:repeat="item location">/<a href="${item/link}"
-    >${item/name}</a></stl:block>
+    stl:omit-tag="not item/link">${item/name}</a></stl:block>
+  </p>
 
   ${body}
 </stl:block>

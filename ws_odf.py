@@ -80,17 +80,24 @@ class ODFWSBrowseTests(STLView):
         if path is None:
             path = Path('.')
 
-        # Get the desired handler
         if path.startswith_slash:
             path.startswith_slash = False
-        handler = test_suite.get_handler(path)
 
         # Namespace: the location
         base = '/%s/;browse_tests' % context.site_root.get_pathto(resource)
         link = base + '?path=%s'
-        location = [ {'name': name, 'link': link % path[:i+1]}
-                     for i, name in enumerate(path) ]
-        location.insert(0, {'name': MSG(u'Test Suite'), 'link': link % '.'})
+        location = [{'name': MSG(u'Test Suite'), 'link': link % '.'}]
+        for i, name in enumerate(path):
+            p = path[:i+1]
+            try:
+                handler = test_suite.get_handler(p)
+            except LookupError:
+                location.append({'name': name, 'link': None})
+                body = MSG(u'The "$path" resource has not been found')
+                body = body.gettext(path=p)
+                return {'location': location, 'body': body}
+            else:
+                location.append({'name': name, 'link': link % p})
 
         # (1) View PO file
         root = context.root
