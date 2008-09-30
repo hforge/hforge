@@ -90,7 +90,7 @@ class ODFWSBrowseTests(STLView):
         for i, name in enumerate(path):
             p = path[:i+1]
             try:
-                handler = test_suite.get_handler(p)
+                test_suite.get_handler(p)
             except LookupError:
                 location.append({'name': name, 'link': None})
                 body = MSG(u'The "$path" resource has not been found')
@@ -98,6 +98,9 @@ class ODFWSBrowseTests(STLView):
                 return {'location': location, 'body': body}
             else:
                 location.append({'name': name, 'link': link % p})
+
+        # Get the handler
+        handler = test_suite.get_handler(path)
 
         # (1) View PO file
         root = context.root
