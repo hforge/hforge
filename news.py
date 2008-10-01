@@ -28,17 +28,19 @@ from itools.xml import XMLError, XMLParser
 
 # Import from ikaaro
 from ikaaro.folder import Folder
-from ikaaro.forms import DateWidget
+from ikaaro.forms import DateWidget, RTEWidget
 from ikaaro.html import WebPage
 from ikaaro.messages import *
 from ikaaro.registry import register_resource_class
 from ikaaro.views import NewInstanceForm
 
 
-
 ###########################################################################
 # Views
 ###########################################################################
+rte = RTEWidget('html', rte_template='/ui/hforge/rte.xml')
+
+
 class NewsNewInstance(NewInstanceForm):
 
     access = 'is_allowed_to_add'
@@ -58,8 +60,7 @@ class NewsNewInstance(NewInstanceForm):
             'action': ';new_resource?type=%s' % News.class_id,
             'submit': MSG(u'Add'),
             'title': context.get_form_value('title', Unicode),
-            'html': root.get_rte(context, 'html', None,
-                                 template='/ui/hforge/rte.xml'),
+            'html': rte.to_html(String, None),
             'date': DateWidget('date').to_html(Date, release_date),
             'class_title': News.class_title.gettext(),
             'timestamp': DateTime.encode(datetime.now()),
@@ -83,8 +84,8 @@ class NewsNewInstance(NewInstanceForm):
 
         # Make Object
         language = resource.get_content_language(context)
-        object = News.make_object(News, resource, name, body=html,
-                                  language=language)
+        object = News.make_resource(News, resource, name, body=html,
+                                    language=language)
         metadata = object.metadata
         metadata.set_property('title', title, language=language)
         metadata.set_property('date', release_date)
@@ -132,8 +133,7 @@ class NewsEdit(STLForm):
             'submit': MSG(u'Change'),
             'title': resource.get_property('title', language=language),
             'date': widget.to_html(Date, release_date),
-            'html': resource.get_rte(context, 'html', resource.handler.events,
-                                     template='/ui/hforge/rte.xml'),
+            'html': rte.to_html(String, resource.handler.events),
             'class_title': resource.class_title,
             'timestamp': DateTime.encode(datetime.now()),
         }
