@@ -18,17 +18,22 @@
 from os.path import expanduser
 
 # Import from itools
+import itools.odf
 from itools import vfs
 from itools.datatypes import String, PathDataType
 from itools.gettext import MSG, POFile
-from itools.handlers import ConfigFile, Folder
+from itools.handlers import ConfigFile, Folder, get_handler_class_by_mimetype
 from itools.handlers import get_handler, Database
+from itools.srx import SRXFile
 from itools.stl import stl
 from itools.uri import Path
-from itools.web import BaseView, STLView, MSG_MISSING_OR_INVALID
+from itools.web import BaseView, STLView, STLForm, MSG_MISSING_OR_INVALID
+from itools.web import ERROR
+from itools.xliff import XLFFile
 from itools.xml import XMLParser
 
 # Import from ikaaro
+from ikaaro.datatypes import FileDataType
 from ikaaro.registry import register_resource_class, register_website
 from ikaaro.website import WebSite
 
@@ -105,9 +110,9 @@ class ODFWSBrowseTests(STLView):
         # (1) View PO file
         root = context.root
         if isinstance(handler, POFile):
-            msgs = [
-                {'id': '" "'.join(item.source), 'str': '" "'.join(item.target)}
-                for item in handler.get_units() ]
+            msgs = [ {'id': '" "'.join(item.source),
+                      'str': '" "'.join(item.target)}
+                        for item in handler.get_units() ]
 
             namespace = {'messages': msgs}
             template = root.get_resource('/ui/odf-i18n/view_po.xml')
@@ -168,16 +173,121 @@ class ODFWSBrowseTests(STLView):
 
 
 
+class Translation_View(STLForm):
+
+    access = True
+    title = MSG(u'Online translation')
+    template = '/ui/odf-i18n/translation_view.xml'
+
+
+    # First form
+    action_odf2tr_schema = {
+        'odf_file': FileDataType(mandatory=True),
+        'srx_file': FileDataType(),
+        'output_type': String(mandatory=True)}
+
+    def action_odf2tr(self, resource, context, form):
+        odf_file_name, odf_file_mime_type, odf_file_data = form['odf_file']
+        srx_file = form['srx_file']
+        output_type = form['output_type']
+
+        # Not a too big file
+        if len(odf_file_data) >= 102400:
+            context.message = ERROR(u'Your ODF file is too big >= 100Kb')
+            return
+
+        # Get the good "get_units"
+        odf_handler = get_handler_class_by_mimetype(odf_file_mime_type)
+        get_units = odf_handler(string=odf_file_data).get_units
+
+        # a SRX file ?
+        if srx_file is not None:
+            srx_file_data = srx_file[2]
+            srx_handler = SRXFile(string=srx_file_data)
+        else:
+            srx_handler = None
+
+        # The good handler for the output
+        if output_type == 'PO':
+            out_filename = odf_file_name+'.po'
+            out_handler = POFile()
+        else:
+            out_filename = odf_file_name+'.xlf'
+            out_handler = XLFFile()
+
+        # Make the output
+        for source, source_context, line in get_units(
+                                            srx_handler=srx_handler):
+            out_handler.add_unit(odf_file_name, source, source_context, line)
+
+        # Return the result
+        response = context.response
+        response.set_header('Content-Disposition',
+                            'inline; filename="%s"' % out_filename)
+        response.set_header('Content-Type', out_handler.class_mimetypes[0])
+        return out_handler.to_str()
+
+
+    # Second form
+    action_odf2odf_schema = {
+        'tr_odf_file': FileDataType(mandatory=True),
+        'tr_srx_file': FileDataType(),
+        'tr_input': FileDataType(mandatory=True)}
+
+    def action_odf2odf(self, resource, context, form):
+        odf_file_name, odf_file_mime_type, odf_file_data = form['tr_odf_file']
+        srx_file = form['tr_srx_file']
+        trash, input_file_mime_type, input_file_data = form['tr_input']
+
+        # Not a too big file
+        if len(odf_file_data) >= 102400:
+            context.message = ERROR(u'Your ODF file is too big >= 100Kb')
+            return
+
+        # Get the good "translate"
+        odf_handler = get_handler_class_by_mimetype(odf_file_mime_type)
+        translate = odf_handler(string=odf_file_data).translate
+
+        # a SRX file ?
+        if srx_file is not None:
+            srx_file_data = srx_file[2]
+            srx_handler = SRXFile(string=srx_file_data)
+        else:
+            srx_handler = None
+
+        # The catalog
+        input_handler = get_handler_class_by_mimetype(input_file_mime_type)
+        catalog = input_handler(string=input_file_data)
+
+        # Make the translation!
+        data = translate(catalog, srx_handler=srx_handler)
+
+        # Return the result
+        response = context.response
+        response.set_header('Content-Disposition',
+                            'inline; filename="%s"' % odf_file_name)
+        response.set_header('Content-Type', odf_file_mime_type)
+        return data
+
+
+
+
+    def get_namespace(self, resource, context):
+        return  {}
+
+
+
 class ODFWS(WebSite):
 
     class_id = 'hforge.org/odf-i18n-tests'
     class_title = MSG(u'i18n Testsuite')
     class_skin = 'ui/odf-i18n'
-    class_views = ['browse_tests'] + WebSite.class_views
+    class_views = ['browse_tests', 'translation'] + WebSite.class_views
 
     # Views
     download = ODFWSDownload()
     browse_tests = ODFWSBrowseTests()
+    translation = Translation_View()
 
 
 

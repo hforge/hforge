@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:stl="http://www.hforge.org/xml-namespaces/stl">
+
+  <form action="" method="post" enctype="multipart/form-data">
+    <fieldset>
+      <legend>ODF to PO/XLIFF</legend>
+      <p>
+        First step to translate a document: you must extract all the units
+        from your ODF file with our extrator and fill it.
+      </p>
+      <dl>
+        <dt><label for="odf_file">ODF file (max 100Kb)</label></dt>
+        <dd><input id="odf_file" type="file" name="odf_file" /></dd>
+
+        <dt><label for="srx_file">SRX file (optional)</label></dt>
+        <dd><input id="srx_file" type="file" name="srx_file" /></dd>
+
+
+        <dt><label for="output_type">Output format</label></dt>
+        <dd><input id="output_type" type="radio" name="output_type"
+                   checked="checked" value="PO" /> PO
+          <input type="radio" name="output_type" value="XLIFF" /> XLIFF</dd>
+      </dl>
+      <br/>
+      <input type="submit" name=";odf2tr" value="Envoyer"/>
+    </fieldset>
+  </form>
+  <br/>
+
+  <form action="" method="post" enctype="multipart/form-data">
+    <fieldset>
+      <legend>ODF + PO/XLIFF to ODF</legend>
+      <p>
+        Second step, with your document and your translations, we can send to
+        you a translation.
+      </p>
+      <dl>
+        <dt><label for="tr_odf_file">ODF file (max 100Kb)</label></dt>
+        <dd><input id="tr_odf_file" type="file" name="tr_odf_file" /></dd>
+
+        <dt><label for="tr_srx_file">SRX file (must be the same used in the
+                first step)</label></dt>
+        <dd><input id="tr_srx_file" type="file" name="tr_srx_file" /></dd>
+
+        <dt><label for="tr_input">PO or XLIFF file</label></dt>
+        <dd><input id="tr_input" type="file" name="tr_input" /></dd>
+      </dl>
+      <br/>
+      <input type="submit" name=";odf2odf" value="Envoyer"/>
+    </fieldset>
+  </form>
+
+
+</stl:block>
+
