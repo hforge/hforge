@@ -30,7 +30,7 @@ from itools.uri import Path
 from itools.web import BaseView, STLView, STLForm, MSG_MISSING_OR_INVALID
 from itools.web import ERROR
 from itools.xliff import XLFFile
-from itools.xml import XMLParser
+from itools.xml import XMLParser, XMLError
 
 # Import from ikaaro
 from ikaaro.datatypes import FileDataType
@@ -198,12 +198,21 @@ class Translation_View(STLForm):
 
         # Get the good "get_units"
         odf_handler = get_handler_class_by_mimetype(odf_file_mime_type)
-        get_units = odf_handler(string=odf_file_data).get_units
+        try:
+            get_units = odf_handler(string=odf_file_data).get_units
+        except AttributeError:
+            context.message = ERROR(u'malformed ODF file')
+            return
 
         # a SRX file ?
         if srx_file is not None:
             srx_file_data = srx_file[2]
-            srx_handler = SRXFile(string=srx_file_data)
+            try:
+                srx_handler = SRXFile(string=srx_file_data)
+            except XMLError:
+                context.message = ERROR(u'unexpected error, please verify '
+                                        u'your input files')
+                return
         else:
             srx_handler = None
 
@@ -219,6 +228,8 @@ class Translation_View(STLForm):
         for source, source_context, line in get_units(
                                             srx_handler=srx_handler):
             out_handler.add_unit(odf_file_name, source, source_context, line)
+
+
 
         # Return the result
         response = context.response
@@ -246,18 +257,33 @@ class Translation_View(STLForm):
 
         # Get the good "translate"
         odf_handler = get_handler_class_by_mimetype(odf_file_mime_type)
-        translate = odf_handler(string=odf_file_data).translate
+        try:
+            translate = odf_handler(string=odf_file_data).translate
+        except AttributeError:
+            context.message = ERROR(u'malformed ODF file')
+            return
 
         # a SRX file ?
         if srx_file is not None:
             srx_file_data = srx_file[2]
-            srx_handler = SRXFile(string=srx_file_data)
+            try:
+                srx_handler = SRXFile(string=srx_file_data)
+            except XMLError:
+                context.message = ERROR(u'unexpected error, please verify '
+                                        u'your input files')
+                return
         else:
             srx_handler = None
 
-        # The catalog
+        # Get the catalog and test it
         input_handler = get_handler_class_by_mimetype(input_file_mime_type)
         catalog = input_handler(string=input_file_data)
+        try:
+            catalog.gettext
+        except AttributeError:
+            context.message = ERROR(u'unexpected error, please verify '
+                                    u'your input files')
+            return
 
         # Make the translation!
         data = translate(catalog, srx_handler=srx_handler)
