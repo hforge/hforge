@@ -130,9 +130,16 @@ class ODFWSBrowseTests(STLView):
         children.sort()
         a_handler = handler.get_handler(children[0])
         if isinstance(a_handler, Folder):
-            files = [
-                {'child_name': x, 'to_child': link % ('%s/%s' % (path, x))}
-                for x in children ]
+            files = []
+            for child in children:
+                child_handler = handler.get_handler(child)
+                number = 0
+                for handler_obj in child_handler.traverse():
+                    if isinstance(handler_obj, POFile):
+                        number += 1
+                files.append({'child_name': child,
+                              'to_child': link % ('%s/%s' % (path, child)),
+                              'number': number})
 
             namespace = {'content': files}
             template = root.get_resource('/ui/odf-i18n/browse_folder.xml')

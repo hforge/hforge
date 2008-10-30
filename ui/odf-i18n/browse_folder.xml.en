@@ -5,7 +5,7 @@
   xmlns:stl="http://www.hforge.org/xml-namespaces/stl">
   <ul>
   <li stl:repeat="file content">
-    <a href="${file/to_child}">${file/child_name}</a>
+    <a href="${file/to_child}">${file/child_name} (${file/number})</a>
   </li>
   </ul>
 </stl:block>
