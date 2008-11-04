@@ -25,7 +25,7 @@ from itools.web import FormError, STLView, BaseForm
 from itools.xapian import EqQuery
 
 # Import from ikaaro
-from ikaaro.folder_views import FolderBrowseContent, FolderLastChanges
+from ikaaro.folder_views import Folder_BrowseContent, Folder_LastChanges
 from ikaaro.registry import register_resource_class
 from ikaaro.root import Root as BaseRoot
 from ikaaro.website import WebSite
@@ -149,8 +149,8 @@ class Root(BaseRoot):
         return None
 
     # Restrict access to the folder's views
-    browse_content = FolderBrowseContent(access='is_allowed_to_edit')
-    last_changes = FolderLastChanges(access='is_allowed_to_edit')
+    browse_content = Folder_BrowseContent(access='is_allowed_to_edit')
+    last_changes = Folder_LastChanges(access='is_allowed_to_edit')
 
     # Custom Views
     view = RootView()
