@@ -22,7 +22,7 @@ from itools.datatypes import Email, String
 from itools.gettext import MSG
 from itools.stl import stl
 from itools.web import FormError, STLView, BaseForm
-from itools.xapian import EqQuery
+from itools.xapian import PhraseQuery
 
 # Import from ikaaro
 from ikaaro.folder_views import Folder_BrowseContent, Folder_LastChanges
@@ -59,7 +59,7 @@ class RootView(STLView):
 
     def get_namespace(self, resource, context):
         # Search news
-        query = EqQuery('format', News.class_id)
+        query = PhraseQuery('format', News.class_id)
         results = resource.search(query)
         documents = results.get_documents(sort_by='date', reverse=True)
         # Browse metadatas
