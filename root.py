@@ -143,7 +143,6 @@ class Root(BaseRoot):
     class_id = 'hforge.org'
     class_title = MSG(u'HForge')
     class_skin = 'ui/hforge'
-    class_views = ['view'] + BaseRoot.class_views
 
     def get_page_title(self):
         return None
