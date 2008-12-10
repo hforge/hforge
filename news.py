@@ -145,7 +145,7 @@ class NewsEdit(STLForm):
         if timestamp is None:
             context.message = MSG_EDIT_CONFLICT
             return
-        document = resource.get_epoz_document()
+        document = resource.get_html_document()
         if document.timestamp is not None and timestamp < document.timestamp:
             context.message = MSG_EDIT_CONFLICT
             return
