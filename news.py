@@ -179,7 +179,7 @@ class News(WebPage):
     class_id = 'news'
     class_title = MSG(u'News')
     class_description = MSG(u'Create and publich News')
-    class_views = ['view', 'edit', 'state_form', 'history_form']
+    class_views = ['view', 'edit', 'edit_state', 'history']
 
 
     @classmethod
