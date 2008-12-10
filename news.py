@@ -165,7 +165,7 @@ class NewsEdit(STLForm):
         release_date = form['date']
         resource.set_property('date', release_date)
         # Body
-        resource.handler.events = html
+        document.set_events(html)
 
         # Ok
         context.message = MSG_CHANGES_SAVED
