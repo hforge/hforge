@@ -15,7 +15,7 @@
       </dd>
       <dl><label for="date">Date</label></dl>
       <dd>
-        <p>${date}</p>
+        ${date}
       </dd>
     </dl>
     <label for="html">Description</label>

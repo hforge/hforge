@@ -32,7 +32,7 @@ from ikaaro.forms import DateWidget, RTEWidget
 from ikaaro.html import WebPage
 from ikaaro.messages import *
 from ikaaro.registry import register_resource_class
-from ikaaro.views import NewInstanceForm
+from ikaaro.resource_views import DBResource_NewInstance
 
 
 ###########################################################################
@@ -41,38 +41,30 @@ from ikaaro.views import NewInstanceForm
 rte = RTEWidget('html', rte_template='/ui/hforge/rte.xml')
 
 
-class NewsNewInstance(NewInstanceForm):
+class News_NewInstance(DBResource_NewInstance):
 
     access = 'is_allowed_to_add'
-    template = '/ui/hforge/News_edit.xml'
-    schema = {
-        'title': Unicode(mandatory=True),
-        'html': String,
-        'date': Date,
-    }
+    widgets = DBResource_NewInstance.widgets + [
+        DateWidget('date', title=MSG(u'Date')),
+        RTEWidget('html', title=MSG(u'Description'),
+                  rte_template='/ui/hforge/rte.xml'),
+    ]
 
-    def get_namespace(self, resource, context):
-        root = context.root
-        # Build the namespace
-        default = date.today().isoformat()
-        release_date = context.get_form_value('date', Date, default=default)
+    def get_schema(self, resource, context):
         return {
-            'action': ';new_resource?type=%s' % News.class_id,
-            'submit': MSG(u'Add'),
-            'title': context.get_form_value('title', Unicode),
-            'html': rte.to_html(String, None),
-            'date': DateWidget('date').to_html(Date, release_date),
-            'class_title': News.class_title.gettext(),
-            'timestamp': DateTime.encode(datetime.now()),
-        }
+            'name': String,
+            'title': Unicode(mandatory=True),
+            'html': String,
+            'date': Date(default=date.today())}
 
 
     def action(self, resource, context, form):
+        name = form['name']
         title = form['title']
         html = form['html']
         release_date = form['date']
 
-        name = checkid(title)
+        name = checkid(name)
         if name is None:
             context.message = MSG_BAD_NAME
             return
@@ -95,7 +87,7 @@ class NewsNewInstance(NewInstanceForm):
 
 
 
-class NewsView(STLView):
+class News_View(STLView):
 
     access = 'is_allowed_to_view'
     title = MSG(u'View')
@@ -111,7 +103,7 @@ class NewsView(STLView):
 
 
 
-class NewsEdit(STLForm):
+class News_Edit(STLForm):
 
     access = 'is_allowed_to_edit'
     title = MSG(u'Edit')
@@ -203,9 +195,9 @@ class News(WebPage):
 
 
     # Views
-    new_instance = NewsNewInstance()
-    view = NewsView()
-    edit = NewsEdit()
+    new_instance = News_NewInstance()
+    view = News_View()
+    edit = News_Edit()
 
 
 ###########################################################################
