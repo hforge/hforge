@@ -31,7 +31,8 @@ from ikaaro.root import Root as BaseRoot
 from ikaaro.website import WebSite
 
 # Import from hforge
-from news import News
+from news import News, NewsFolder
+from project import Project
 
 
 ###########################################################################
@@ -138,11 +139,23 @@ class RootSubscribe(BaseForm):
 ###########################################################################
 # Resource
 ###########################################################################
-class Root(BaseRoot):
+class Root(Project, BaseRoot):
 
     class_id = 'hforge.org'
+    class_version = '20090116'
     class_title = MSG(u'HForge')
     class_skin = 'ui/hforge'
+    __fixed_handlers__ = BaseRoot.__fixed_handlers__ + ['news']
+
+
+    @staticmethod
+    def _make_resource(cls, folder, email, password):
+        root = BaseRoot._make_resource(cls, folder, email, password)
+        # Add the news folder
+        metadata = NewsFolder.build_metadata()
+        folder.set_handler('news.metadata', metadata)
+        return root
+
 
     def get_page_title(self):
         return None
@@ -155,6 +168,19 @@ class Root(BaseRoot):
     view = RootView()
     projects = RootProjects()
     subscribe = RootSubscribe()
+
+    # Update
+    def update_20090116(self):
+        resources = [self] + list(self.search_resources(cls=WebSite))
+        for resource in resources:
+            # Move news to the news folder
+            NewsFolder.make_resource(NewsFolder, resource, 'news')
+            for news in resource.search_resources(cls=News):
+                resource.move_resource(news.name, 'news/%s' % news.name)
+            # Change format to 'project'
+            if resource.class_id == 'WebSite':
+                resource.metadata.set_changed()
+                resource.metadata.format = 'project'
 
 
 ###########################################################################

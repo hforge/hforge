@@ -200,8 +200,19 @@ class News(WebPage):
     edit = News_Edit()
 
 
+
+class NewsFolder(Folder):
+
+    class_id = 'news-folder'
+    class_title = MSG(u'News Folder')
+
+    def get_document_types(self):
+        return [News]
+
+
+
 ###########################################################################
 # Register
 ###########################################################################
 register_resource_class(News)
-Folder.register_document_type(News)
+register_resource_class(NewsFolder)

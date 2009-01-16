@@ -35,7 +35,9 @@ from itools.xml import XMLParser, XMLError
 # Import from ikaaro
 from ikaaro.datatypes import FileDataType
 from ikaaro.registry import register_resource_class, register_website
-from ikaaro.website import WebSite
+
+# Import from hforge
+from project import Project
 
 
 # ODF i18n Testsuite location
@@ -310,12 +312,12 @@ class Translation_View(STLForm):
 
 
 
-class ODFWS(WebSite):
+class ODFWS(Project):
 
     class_id = 'hforge.org/odf-i18n-tests'
     class_title = MSG(u'i18n Testsuite')
     class_skin = 'ui/odf-i18n'
-    class_views = ['browse_tests', 'translation'] + WebSite.class_views
+    class_views = ['browse_tests', 'translation'] + Project.class_views
 
     # Views
     download = ODFWSDownload()
