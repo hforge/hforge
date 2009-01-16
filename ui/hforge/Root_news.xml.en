@@ -13,7 +13,4 @@
     ${object/html}
     <hr size="1" align="center" noshade="noshade" />
   </stl:block>
-  <p>
-  <a href=";news">See all the news...</a>
-  </p>
 </stl:block>

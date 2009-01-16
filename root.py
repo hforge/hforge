@@ -22,7 +22,7 @@ from itools.datatypes import Email, String
 from itools.gettext import MSG
 from itools.stl import stl
 from itools.web import FormError, STLView, BaseForm
-from itools.xapian import PhraseQuery
+from itools.xapian import AndQuery, PhraseQuery
 
 # Import from ikaaro
 from ikaaro.folder_views import Folder_BrowseContent, Folder_LastChanges
@@ -52,22 +52,25 @@ def format_date(day):
         return '%b %dth %Y'
 
 
-class RootView(STLView):
+class Root_View(STLView):
 
     access = True
     title = MSG(u'View')
     template = '/ui/hforge/Root_view.xml'
 
+    n_news = 3
+
     def get_namespace(self, resource, context):
         # Search news
-        query = PhraseQuery('format', News.class_id)
+        query = AndQuery(
+            PhraseQuery('format', News.class_id),
+            PhraseQuery('workflow_state', 'public'))
         results = resource.search(query)
-        documents = results.get_documents(sort_by='date', reverse=True)
+        documents = results.get_documents(sort_by='date', reverse=True,
+                                          size=self.n_news)
         # Browse metadatas
         lines = []
         for news in documents:
-            if news.workflow_state != 'public':
-                continue
             year, month, day = news.date.split('-')
             date_object = date(int(year), int(month), int(day))
             format = format_date(date_object.day)
@@ -80,7 +83,16 @@ class RootView(STLView):
 
 
 
-class RootProjects(STLView):
+class Root_News(Root_View):
+
+    title = MSG(u'News')
+    template = '/ui/hforge/Root_news.xml'
+
+    n_news = 0
+
+
+
+class Root_Projects(STLView):
 
     access = True
     title = MSG(u'Projects')
@@ -106,7 +118,7 @@ class RootProjects(STLView):
 
 
 
-class RootSubscribe(BaseForm):
+class Root_Subscribe(BaseForm):
 
     access = True
     schema = {
@@ -165,9 +177,10 @@ class Root(Project, BaseRoot):
     last_changes = Folder_LastChanges(access='is_allowed_to_edit')
 
     # Custom Views
-    view = RootView()
-    projects = RootProjects()
-    subscribe = RootSubscribe()
+    view = Root_View()
+    news = Root_News()
+    projects = Root_Projects()
+    subscribe = Root_Subscribe()
 
     # Update
     def update_20090116(self):
