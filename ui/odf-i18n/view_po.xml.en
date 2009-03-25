@@ -6,10 +6,15 @@
   <p id="preformated">
     <code>
       <stl:block stl:repeat="msg messages">
-        <span id="pokey">msgid</span> <span id="povalue">"${msg/id}"</span>
+        <span id="pokey">msgid</span>
+        <stl:block stl:repeat="line msg/id">
+          <span id="povalue">"${line}"</span><br/>
+        </stl:block>
+        <span id="pokey">msgstr</span>
+        <stl:block stl:repeat="line msg/str">
+          <span id="povalue">"${line}"</span><br/>
+        </stl:block>
         <br />
-        <span id="pokey">msgstr</span> <span id="povalue">"${msg/str}"</span>
-        <br /><br />
       </stl:block>
     </code>
   </p>

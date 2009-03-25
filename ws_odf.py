@@ -112,13 +112,12 @@ class ODFWSBrowseTests(STLView):
         # (1) View PO file
         root = context.root
         if isinstance(handler, POFile):
-            msgs = [ {'id': '" "'.join(item.source),
-                      'str': '" "'.join(item.target)}
-                        for item in handler.get_units() ]
-
-            namespace = {'messages': msgs}
             template = root.get_resource('/ui/odf-i18n/view_po.xml')
+            units = handler.get_units()
+            msgs = [ {'id': x.source, 'str': x.target} for x in units ]
+            namespace = {'messages': msgs}
             body = stl(template, namespace)
+
             return {'location': location, 'body': body}
 
         # Load setup file
