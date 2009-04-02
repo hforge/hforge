@@ -23,7 +23,6 @@ from itools.handlers import checkid
 from itools.gettext import MSG
 from itools.stl import stl
 from itools.web import STLView, STLForm
-from itools.xapian import KeywordField
 from itools.xml import XMLError, XMLParser
 
 # Import from ikaaro
@@ -70,7 +69,7 @@ class News_NewInstance(DBResource_NewInstance):
             return
 
         # Check the name is free
-        if resource.has_resource(name):
+        if resource.get_resource(name, soft=True):
             context.message = MSG_NAME_CLASH
             return
 
@@ -181,13 +180,6 @@ class News(WebPage):
         return schema
 
 
-    def get_catalog_fields(self):
-        base_fields = WebPage.get_catalog_fields(self)
-        field = KeywordField('date', is_stored=True)
-        base_fields.append(field)
-        return base_fields
-
-
     def get_catalog_values(self):
         indexes = WebPage.get_catalog_values(self)
         indexes['date'] = self.get_property('date').isoformat()
@@ -216,3 +208,5 @@ class NewsFolder(Folder):
 ###########################################################################
 register_resource_class(News)
 register_resource_class(NewsFolder)
+
+register_field('date', String(is_stored=True))

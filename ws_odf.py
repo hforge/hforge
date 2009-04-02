@@ -23,7 +23,7 @@ from itools import vfs
 from itools.datatypes import String, PathDataType
 from itools.gettext import MSG, POFile
 from itools.handlers import ConfigFile, Folder, get_handler_class_by_mimetype
-from itools.handlers import get_handler, Database
+from itools.handlers import get_handler, RODatabase
 from itools.srx import SRXFile
 from itools.stl import stl
 from itools.uri import Path
@@ -34,7 +34,8 @@ from itools.xml import XMLParser, XMLError
 
 # Import from ikaaro
 from ikaaro.datatypes import FileDataType
-from ikaaro.registry import register_resource_class, register_website
+from ikaaro.registry import register_resource_class, register_document_type
+from ikaaro.website import WebSite
 
 # Import from hforge
 from project import Project
@@ -43,7 +44,7 @@ from project import Project
 # ODF i18n Testsuite location
 test_suite = expanduser('~/sandboxes/odf-i18n-tests/documents')
 test_suite = get_handler(test_suite)
-test_suite.database = Database()
+test_suite.database = RODatabase()
 
 
 
@@ -100,7 +101,7 @@ class ODFWSBrowseTests(STLView):
                 test_suite.get_handler(p)
             except LookupError:
                 location.append({'name': name, 'link': None})
-                body = MSG(u'The "$path" resource has not been found')
+                body = MSG(u'The "{path}" resource has not been found')
                 body = body.gettext(path=p)
                 return {'location': location, 'body': body}
             else:
@@ -329,4 +330,4 @@ class ODFWS(Project):
 # Register
 ###########################################################################
 register_resource_class(ODFWS)
-register_website(ODFWS)
+register_document_type(ODFWS, WebSite.class_id)

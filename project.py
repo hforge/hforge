@@ -18,7 +18,7 @@
 from itools.gettext import MSG
 
 # Import from ikaaro
-from ikaaro.registry import register_resource_class, register_website
+from ikaaro.registry import register_resource_class, register_document_type
 from ikaaro.website import WebSite
 
 # Import from hforge
@@ -42,4 +42,4 @@ class Project(WebSite):
 
 # Register
 register_resource_class(Project)
-register_website(Project)
+register_document_type(Project, WebSite.class_id)

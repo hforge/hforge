@@ -24,8 +24,8 @@
       <a href="/;projects">Projects</a> &nbsp;
       <a href="http://docs.hforge.org/">Documentation</a> &nbsp;
       <a href="/community">Community</a> &nbsp;
-      <a href="${login}" id="top_menu_login" stl:if="not user/info">Login</a>
-      <a href="${logout}" id="top_menu_logout" stl:if="user/info">Logout</a>
+      <a href="${login}" id="top-menu-login" stl:if="not user/info">Login</a>
+      <a href="${logout}" id="top-menu-logout" stl:if="user/info">Logout</a>
     </div>
     <stl:block stl:if="user/info">${location}</stl:block>
     <div id="body">

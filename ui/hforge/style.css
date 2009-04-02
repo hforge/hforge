@@ -52,14 +52,14 @@ hr {
   color: #ffffff;
 }
 
-#header #top_menu_login {
+#header #top-menu-login {
   background-image: url(/ui/icons/16x16/lock.png);
   background-position: left center;
   background-repeat: no-repeat;
   padding-left: 18px;
 }
 
-#header #top_menu_logout {
+#header #top-menu-logout {
   background-image: url(/ui/icons/16x16/action_logout.png);
   background-position: left center;
   background-repeat: no-repeat;
