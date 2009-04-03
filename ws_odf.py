@@ -137,7 +137,7 @@ class ODFWSBrowseTests(STLView):
                 child_handler = handler.get_handler(child)
                 number = 0
                 for x in vfs.traverse(child_handler.uri):
-                    if x.path[-1].endswith('.po'):
+                    if x.endswith('.po'):
                         number += 1
                 files.append({'child_name': child,
                               'to_child': link % ('%s/%s' % (path, child)),

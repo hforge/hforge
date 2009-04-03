@@ -30,8 +30,8 @@ from ikaaro.folder import Folder
 from ikaaro.forms import DateWidget, RTEWidget
 from ikaaro.html import WebPage
 from ikaaro.messages import *
-from ikaaro.registry import register_resource_class
-from ikaaro.resource_views import DBResource_NewInstance
+from ikaaro.registry import register_resource_class, register_field
+from ikaaro.views_new import NewInstance
 
 
 ###########################################################################
@@ -40,14 +40,13 @@ from ikaaro.resource_views import DBResource_NewInstance
 rte = RTEWidget('html', rte_template='/ui/hforge/rte.xml')
 
 
-class News_NewInstance(DBResource_NewInstance):
+class News_NewInstance(NewInstance):
 
-    access = 'is_allowed_to_add'
-    widgets = DBResource_NewInstance.widgets + [
+    widgets = NewInstance.widgets + [
         DateWidget('date', title=MSG(u'Date')),
         RTEWidget('html', title=MSG(u'Description'),
-                  rte_template='/ui/hforge/rte.xml'),
-    ]
+                  rte_template='/ui/hforge/rte.xml')]
+
 
     def get_schema(self, resource, context):
         return {
@@ -180,8 +179,8 @@ class News(WebPage):
         return schema
 
 
-    def get_catalog_values(self):
-        indexes = WebPage.get_catalog_values(self)
+    def _get_catalog_values(self):
+        indexes = WebPage._get_catalog_values(self)
         indexes['date'] = self.get_property('date').isoformat()
         return indexes
 
