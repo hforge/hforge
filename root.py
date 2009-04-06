@@ -27,7 +27,7 @@ from itools.xapian import AndQuery, PhraseQuery
 # Import from ikaaro
 from ikaaro.folder_views import Folder_BrowseContent
 from ikaaro.registry import register_resource_class
-from ikaaro.revisions_views import Revisions_LastChanges
+from ikaaro.revisions_views import DBResource_LastChanges
 from ikaaro.root import Root as BaseRoot
 from ikaaro.website import WebSite
 
@@ -175,7 +175,7 @@ class Root(Project, BaseRoot):
 
     # Restrict access to the folder's views
     browse_content = Folder_BrowseContent(access='is_allowed_to_edit')
-    last_changes = Revisions_LastChanges(access='is_allowed_to_edit')
+    last_changes = DBResource_LastChanges(access='is_allowed_to_edit')
 
     # Custom Views
     view = Root_View()
