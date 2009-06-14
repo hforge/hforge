@@ -28,6 +28,7 @@ from itools.srx import SRXFile
 from itools.stl import stl
 from itools.uri import Path
 from itools.web import BaseView, STLView, STLForm, MSG_MISSING_OR_INVALID
+from itools.vfs import FileName
 from itools.web import ERROR
 from itools.xliff import XLFFile
 from itools.xml import XMLParser, XMLError
@@ -234,18 +235,17 @@ class Translation_View(STLForm):
 
         # The good handler for the output
         if output_type == 'PO':
-            out_filename = odf_file_name+'.po'
+            extension = 'po'
             out_handler = POFile()
         else:
-            out_filename = odf_file_name+'.xlf'
+            extension = 'xlf'
             out_handler = XLFFile()
+        name = FileName.decode(odf_file_name)[0]
+        out_filename = FileName.encode((name, extension, None))
 
         # Make the output
-        for source, source_context, line in get_units(
-                                            srx_handler=srx_handler):
+        for source, source_context, line in get_units(srx_handler=srx_handler):
             out_handler.add_unit(odf_file_name, source, source_context, line)
-
-
 
         # Return the result
         response = context.response
