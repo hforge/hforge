@@ -28,10 +28,10 @@ from itools.xml import XMLError, XMLParser
 # Import from ikaaro
 from ikaaro.folder import Folder
 from ikaaro.forms import DateWidget, RTEWidget
-from ikaaro.html import WebPage
 from ikaaro.messages import *
 from ikaaro.registry import register_resource_class, register_field
 from ikaaro.views_new import NewInstance
+from ikaaro.webpage import WebPage
 
 
 ###########################################################################
