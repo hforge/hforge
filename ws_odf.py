@@ -189,6 +189,14 @@ class Translation_View(STLForm):
     template = '/ui/odf-i18n/translation_view.xml'
 
 
+    def check_size(self, odf_file_data, context):
+        size = len(odf_file_data)
+        if size > 5242880:
+            context.message = ERROR(u'Your ODF file is too big (> 5Mb)')
+            return 1
+        return 0
+
+
     # First form
     action_odf2tr_schema = {
         'odf_file': FileDataType(mandatory=True),
@@ -201,8 +209,7 @@ class Translation_View(STLForm):
         output_type = form['output_type']
 
         # Not a too big file
-        if len(odf_file_data) >= 102400:
-            context.message = ERROR(u'Your ODF file is too big >= 100Kb')
+        if self.check_size(odf_file_data, context):
             return
 
         # Get the good "get_units"
@@ -260,8 +267,7 @@ class Translation_View(STLForm):
         trash, input_file_mime_type, input_file_data = form['tr_input']
 
         # Not a too big file
-        if len(odf_file_data) >= 102400:
-            context.message = ERROR(u'Your ODF file is too big >= 100Kb')
+        if self.check_size(odf_file_data, context):
             return
 
         # Get the good "translate"
