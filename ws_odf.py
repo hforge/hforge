@@ -183,19 +183,19 @@ class ODFWSBrowseTests(STLView):
 
 
 
+def check_size(odf_file_data, context):
+    size = len(odf_file_data)
+    if size > 5242880:
+        context.message = ERROR(u'Your ODF file is too big (> 5Mb)')
+        return 1
+    return 0
+
+
 class Translation_View(STLForm):
 
     access = True
     title = MSG(u'Online translation')
     template = '/ui/odf-i18n/translation_view.xml'
-
-
-    def check_size(self, odf_file_data, context):
-        size = len(odf_file_data)
-        if size > 5242880:
-            context.message = ERROR(u'Your ODF file is too big (> 5Mb)')
-            return 1
-        return 0
 
 
     # First form
@@ -210,7 +210,7 @@ class Translation_View(STLForm):
         output_type = form['output_type']
 
         # Not a too big file
-        if self.check_size(odf_file_data, context):
+        if check_size(odf_file_data, context):
             return
 
         # Get the good "get_units"
@@ -267,7 +267,7 @@ class Translation_View(STLForm):
         trash, input_file_mime_type, input_file_data = form['tr_input']
 
         # Not a too big file
-        if self.check_size(odf_file_data, context):
+        if check_size(odf_file_data, context):
             return
 
         # Get the good "translate"
@@ -311,10 +311,50 @@ class Translation_View(STLForm):
         return data
 
 
+    def get_namespace(self, resource, context):
+        return  {}
+
+
+
+class Greek_View(STLForm):
+
+    access = True
+    title = MSG(u'Anonymise ODF file')
+    template = '/ui/odf-i18n/greek_view.xml'
+
+    schema = {
+        'odf_file': FileDataType(mandatory=True)}
+
+
+    def action(self, resource, context, form):
+        odf_file_name, odf_file_mimetype, odf_file_data = form['odf_file']
+
+        # Not a too big file
+        if check_size(odf_file_data, context):
+            return
+
+        # Load the handler
+        odf_handler = get_handler_class_by_mimetype(odf_file_mimetype)
+        odf_handler = odf_handler(string=odf_file_data)
+
+        # Greek
+        output = odf_handler.greek()
+
+        # Add '-greek' to the filename
+        name, extension, language = FileName.decode(odf_file_name)
+        out_filename = FileName.encode((name + '-greek', extension, language))
+
+        # Return the result
+        response = context.response
+        response.set_header('Content-Disposition',
+                            'inline; filename="%s"' % out_filename)
+        response.set_header('Content-Type', odf_file_mimetype)
+        return output
 
 
     def get_namespace(self, resource, context):
         return  {}
+
 
 
 
@@ -329,6 +369,7 @@ class ODFWS(Project):
     download = ODFWSDownload()
     browse_tests = ODFWSBrowseTests()
     translation = Translation_View()
+    greek = Greek_View()
 
 
 
