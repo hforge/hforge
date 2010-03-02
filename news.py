@@ -29,7 +29,7 @@ from itools.xml import XMLError, XMLParser
 from ikaaro.folder import Folder
 from ikaaro.forms import DateWidget, RTEWidget
 from ikaaro.messages import *
-from ikaaro.registry import register_resource_class, register_field
+from ikaaro.registry import register_field
 from ikaaro.views_new import NewInstance
 from ikaaro.webpage import WebPage
 
@@ -205,7 +205,4 @@ class NewsFolder(Folder):
 ###########################################################################
 # Register
 ###########################################################################
-register_resource_class(News)
-register_resource_class(NewsFolder)
-
 register_field('date', String(is_stored=True))

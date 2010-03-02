@@ -7,7 +7,7 @@
       You are going to receive a confirmation email.  Reply it to finish the
       subscription process.
       </p>
-      <input type="submit" value="OK" />
+      <button type="submit">OK</button>
     </fieldset>
   </form>
 </div>

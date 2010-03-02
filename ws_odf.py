@@ -19,23 +19,22 @@ from os.path import expanduser
 
 # Import from itools
 import itools.odf
-from itools import vfs
 from itools.datatypes import String, PathDataType
+from itools.fs import FileName, lfs
 from itools.gettext import MSG, POFile
 from itools.handlers import ConfigFile, Folder, get_handler_class_by_mimetype
-from itools.handlers import get_handler, RODatabase
+from itools.handlers import RODatabase
 from itools.srx import SRXFile
 from itools.stl import stl
 from itools.uri import Path
 from itools.web import BaseView, STLView, STLForm, MSG_MISSING_OR_INVALID
-from itools.vfs import FileName
 from itools.web import ERROR
 from itools.xliff import XLFFile
 from itools.xml import XMLParser, XMLError
 
 # Import from ikaaro
 from ikaaro.datatypes import FileDataType
-from ikaaro.registry import register_resource_class, register_document_type
+from ikaaro.registry import register_document_type
 from ikaaro.website import WebSite
 
 # Import from hforge
@@ -43,9 +42,9 @@ from project import Project
 
 
 # ODF i18n Testsuite location
+ro_database = RODatabase(fs=lfs)
 test_suite = expanduser('~/sandboxes/odf-i18n-tests/documents')
-test_suite = get_handler(test_suite)
-test_suite.database = RODatabase()
+test_suite = ro_database.get_handler(test_suite)
 
 
 
@@ -137,7 +136,7 @@ class ODFWSBrowseTests(STLView):
             for child in children:
                 child_handler = handler.get_handler(child)
                 number = 0
-                for x in vfs.traverse(child_handler.uri):
+                for x in test_suite.database.fs.traverse(child_handler.key):
                     if x.endswith('.po'):
                         number += 1
                 files.append({'child_name': child,
@@ -357,7 +356,6 @@ class Greek_View(STLForm):
 
 
 
-
 class ODFWS(Project):
 
     class_id = 'hforge.org/odf-i18n-tests'
@@ -376,5 +374,4 @@ class ODFWS(Project):
 ###########################################################################
 # Register
 ###########################################################################
-register_resource_class(ODFWS)
 register_document_type(ODFWS, WebSite.class_id)

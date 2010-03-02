@@ -26,8 +26,6 @@ from itools.xapian import AndQuery, PhraseQuery
 
 # Import from ikaaro
 from ikaaro.folder_views import Folder_BrowseContent
-from ikaaro.registry import register_resource_class
-from ikaaro.revisions_views import DBResource_LastChanges
 from ikaaro.root import Root as BaseRoot
 from ikaaro.website import WebSite
 
@@ -175,7 +173,6 @@ class Root(Project, BaseRoot):
 
     # Restrict access to the folder's views
     browse_content = Folder_BrowseContent(access='is_allowed_to_edit')
-    last_changes = DBResource_LastChanges(access='is_allowed_to_edit')
 
     # Custom Views
     view = Root_View()
@@ -183,21 +180,3 @@ class Root(Project, BaseRoot):
     projects = Root_Projects()
     subscribe = Root_Subscribe()
 
-    # Update
-    def update_20090116(self):
-        resources = [self] + list(self.search_resources(cls=WebSite))
-        for resource in resources:
-            # Move news to the news folder
-            NewsFolder.make_resource(NewsFolder, resource, 'news')
-            for news in resource.search_resources(cls=News):
-                resource.move_resource(news.name, 'news/%s' % news.name)
-            # Change format to 'project'
-            if resource.class_id == 'WebSite':
-                resource.metadata.set_changed()
-                resource.metadata.format = 'project'
-
-
-###########################################################################
-# Register
-###########################################################################
-register_resource_class(Root)

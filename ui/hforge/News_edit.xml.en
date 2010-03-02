@@ -24,7 +24,7 @@
     </p>
     <p>
       <input type="hidden" name="timestamp" value="${timestamp}" />
-      <input type="submit" value="${submit}" class="button_ok"/>
+      <button type="submit" class="button_ok">${submit}</button>
     </p>
   </form>
 

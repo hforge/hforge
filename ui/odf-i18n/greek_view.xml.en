@@ -13,7 +13,7 @@
         <dd><input id="odf_file" type="file" name="odf_file" /></dd>
       </dl>
       <br/>
-      <input type="submit" value="Send"/>
+      <button type="submit">Send</button>
     </fieldset>
   </form>
   <p>
