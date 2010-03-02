@@ -65,11 +65,8 @@ class ODFWSDownload(BaseView):
         handler = test_suite.get_handler(path)
 
         # Ok
-        response = context.response
-        response.set_header('Content-Disposition',
-                            'inline; filename="%s"' % path.get_name())
-
-        response.set_header('Content-Type', handler.get_mimetype())
+        context.set_content_type(handler.get_mimetype())
+        context.set_content_disposition('inline', path.get_name())
         return handler.to_str()
 
 
@@ -247,10 +244,8 @@ class Translation_View(STLForm):
             out_handler.add_unit(odf_file_name, source, source_context, line)
 
         # Return the result
-        response = context.response
-        response.set_header('Content-Disposition',
-                            'inline; filename="%s"' % out_filename)
-        response.set_header('Content-Type', out_handler.class_mimetypes[0])
+        context.set_content_type(out_handler.class_mimetypes[0])
+        context.set_content_disposition('inline', out_filename)
         return out_handler.to_str()
 
 
@@ -303,10 +298,8 @@ class Translation_View(STLForm):
         data = translate(catalog, srx_handler=srx_handler)
 
         # Return the result
-        response = context.response
-        response.set_header('Content-Disposition',
-                            'inline; filename="%s"' % odf_file_name)
-        response.set_header('Content-Type', odf_file_mime_type)
+        context.set_content_type(odf_file_mime_type)
+        context.set_content_disposition('inline', odf_file_name)
         return data
 
 
@@ -344,10 +337,8 @@ class Greek_View(STLForm):
         out_filename = FileName.encode((name + '-greek', extension, language))
 
         # Return the result
-        response = context.response
-        response.set_header('Content-Disposition',
-                            'inline; filename="%s"' % out_filename)
-        response.set_header('Content-Type', odf_file_mimetype)
+        context.set_content_type(odf_file_mimetype)
+        context.set_content_disposition('inline', out_filename)
         return output
 
 
