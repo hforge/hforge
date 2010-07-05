@@ -18,18 +18,18 @@
 from datetime import date, datetime
 
 # Import from itools
+from itools.core import merge_dicts
+from itools.database import get_register_fields
 from itools.datatypes import Date, DateTime, String, Unicode
 from itools.handlers import checkid
 from itools.gettext import MSG
-from itools.stl import stl
 from itools.web import STLView, STLForm
 from itools.xml import XMLError, XMLParser
 
 # Import from ikaaro
+from ikaaro.autoform import DateWidget, RTEWidget
 from ikaaro.folder import Folder
-from ikaaro.forms import DateWidget, RTEWidget
 from ikaaro.messages import *
-from ikaaro.registry import register_field
 from ikaaro.views_new import NewInstance
 from ikaaro.webpage import WebPage
 
@@ -172,11 +172,9 @@ class News(WebPage):
     class_views = ['view', 'edit', 'edit_state', 'history']
 
 
-    @classmethod
-    def get_metadata_schema(cls):
-        schema = WebPage.get_metadata_schema()
-        schema['date'] = Date
-        return schema
+    class_schema = merge_dicts(
+        WebPage.class_schema,
+        date=get_register_fields()['date'])
 
 
     def _get_catalog_values(self):
@@ -199,10 +197,3 @@ class NewsFolder(Folder):
 
     def get_document_types(self):
         return [News]
-
-
-
-###########################################################################
-# Register
-###########################################################################
-register_field('date', String(is_stored=True))

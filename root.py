@@ -18,11 +18,11 @@
 from datetime import date
 
 # Import from itools
+from itools.database import AndQuery, PhraseQuery
 from itools.datatypes import Email, String
 from itools.gettext import MSG
 from itools.stl import stl
-from itools.web import FormError, STLView, BaseForm
-from itools.xapian import AndQuery, PhraseQuery
+from itools.web import STLView, BaseForm
 
 # Import from ikaaro
 from ikaaro.folder_views import Folder_BrowseContent

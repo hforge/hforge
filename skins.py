@@ -16,7 +16,6 @@
 
 # Import from itools
 from itools.core import get_abspath
-from itools.gettext import MSG
 
 # Import from ikaaro
 from ikaaro.skins import register_skin, Skin as BaseSkin
