@@ -154,7 +154,6 @@ class Root_Subscribe(BaseForm):
 class Root(Project, BaseRoot):
 
     class_id = 'hforge.org'
-    class_version = '20090116'
     class_title = MSG(u'HForge')
     class_skin = 'ui/hforge'
     __fixed_handlers__ = BaseRoot.__fixed_handlers__ + ['news']
