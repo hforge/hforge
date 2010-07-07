@@ -18,6 +18,7 @@
 from datetime import date
 
 # Import from itools
+from itools.core import get_abspath
 from itools.database import AndQuery, PhraseQuery
 from itools.datatypes import Email, String
 from itools.gettext import MSG
@@ -159,17 +160,19 @@ class Root(Project, BaseRoot):
     __fixed_handlers__ = BaseRoot.__fixed_handlers__ + ['news']
 
 
-    @staticmethod
-    def _make_resource(cls, folder, email, password):
-        root = BaseRoot._make_resource(cls, folder, email, password)
-        # Add the news folder
-        metadata = NewsFolder.build_metadata()
-        folder.set_handler('news.metadata', metadata)
-        return root
+    def init_resource(self, email, password, admins=('0',)):
+        BaseRoot.init_resource(self, email, password, admins=admins)
+        self.make_resource('news', NewsFolder)
+        # Replace logo
+        logo = self.get_resource('theme/logo')
+        path = get_abspath('ui/hforge/images/logo2.png')
+        data = open(path).read()
+        logo.handler.data = data
 
 
     def get_page_title(self):
         return None
+
 
     # Restrict access to the folder's views
     browse_content = Folder_BrowseContent(access='is_allowed_to_edit')

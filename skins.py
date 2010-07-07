@@ -28,6 +28,13 @@ class Skin(BaseSkin):
         return here.get_title()
 
 
+    def get_styles(self, context):
+        styles = super(Skin, self).get_styles(context)
+        idx = styles.index('/ui/hforge/style.css')
+        styles.insert(idx, '/ui/aruni/style.css')
+        return styles
+
+
     def build_namespace(self, context):
         namespace = BaseSkin.build_namespace(self, context)
         namespace['column'] = None

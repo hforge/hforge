@@ -31,13 +31,10 @@ class Project(WebSite):
     class_title = MSG(u'Project')
     __fixed_handlers__ = WebSite.__fixed_handlers__ + ['news']
 
-    @staticmethod
-    def _make_resource(cls, folder, name, **kw):
-        WebSite._make_resource(cls, folder, name, **kw)
-        # Add the news folder
-        metadata = NewsFolder.build_metadata()
-        folder.set_handler('%s/news.metadata' % name, metadata)
 
+    def init_resource(self, **kw):
+        super(Project, self).init_resource(**kw)
+        self.make_resource('news', NewsFolder)
 
 
 # Register
