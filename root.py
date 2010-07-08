@@ -19,6 +19,7 @@ from datetime import date
 
 # Import from itools
 from itools.core import get_abspath
+from itools.csv import Property
 from itools.database import AndQuery, PhraseQuery
 from itools.datatypes import Email, String
 from itools.gettext import MSG
@@ -152,6 +153,7 @@ class Root_Subscribe(BaseForm):
 class Root(Project, BaseRoot):
 
     class_id = 'hforge.org'
+    class_version = '20100708'
     class_title = MSG(u'HForge')
     class_skin = 'ui/hforge'
     __fixed_handlers__ = BaseRoot.__fixed_handlers__ + ['news']
@@ -180,3 +182,20 @@ class Root(Project, BaseRoot):
     projects = Root_Projects()
     subscribe = Root_Subscribe()
 
+
+    def update_20100708(self):
+        # Logo
+        logo = self.get_resource('theme/logo')
+        path = get_abspath('ui/hforge/images/logo2.png')
+        data = open(path).read()
+        logo.handler.set_data(data)
+        # Menu
+        menu = self.get_resource('theme/menu/menu')
+        menu.del_record(1)
+        options = [('../../../;projects', u'Projects'),
+                   ('http://docs.hforge.org/', u'Documentation'),
+                   ('../../../community', u'Community')]
+        for path, title in options:
+            title = Property(title, language='en')
+            menu.add_new_record({'path': path, 'title': title,
+                                 'target': '_top'})

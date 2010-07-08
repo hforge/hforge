@@ -30,10 +30,6 @@
       <div id="links">
         <stl:block stl:if="not user/info">
           <a href="${login}" title="Log in" id="links-menu-login">Log in</a>
-          <stl:block stl:if="user/joinisopen">
-            <a href="/;register" id="links-menu-register"
-              stl:if="user/joinisopen">Register</a>
-          </stl:block>
         </stl:block>
         <stl:block stl:if="user/info">
           <a href="${user/info/home}" title="${user/info/title}"
