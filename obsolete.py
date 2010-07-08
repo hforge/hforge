@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2009 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2008 Matthieu France <matthieu.france@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -14,26 +14,28 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from itools
-from itools.gettext import MSG
-
 # Import from ikaaro
-from ikaaro.blog import Blog
-from ikaaro.registry import register_document_type
-from ikaaro.website import WebSite
+from ikaaro.blog.blog import Blog, Post
 
 
-class Project(WebSite):
+class News(Post):
 
-    class_id = 'project'
-    class_title = MSG(u'Project')
-    __fixed_handlers__ = WebSite.__fixed_handlers__ + ['news']
-
-
-    def init_resource(self, **kw):
-        super(Project, self).init_resource(**kw)
-        self.make_resource('news', Blog)
+    class_id = 'news'
+    class_version = '20100708'
 
 
-# Register
-register_document_type(Project, WebSite.class_id)
+    def update_20100708(self):
+        self.metadata.set_changed()
+        self.metadata.format = 'blog-post'
+
+
+
+class NewsFolder(Blog):
+
+    class_id = 'news-folder'
+    class_version = '20100708'
+
+
+    def update_20100708(self):
+        self.metadata.set_changed()
+        self.metadata.format = 'blog'

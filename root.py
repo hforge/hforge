@@ -26,12 +26,12 @@ from itools.stl import stl
 from itools.web import STLView, BaseForm
 
 # Import from ikaaro
+from ikaaro.blog.blog import Blog, Post
 from ikaaro.folder_views import Folder_BrowseContent
 from ikaaro.root import Root as BaseRoot
 from ikaaro.website import WebSite
 
 # Import from hforge
-from news import News, NewsFolder
 from project import Project
 
 
@@ -63,7 +63,7 @@ class Root_View(STLView):
     def get_namespace(self, resource, context):
         # Search news
         query = AndQuery(
-            PhraseQuery('format', News.class_id),
+            PhraseQuery('format', Post.class_id),
             PhraseQuery('workflow_state', 'public'))
         results = resource.search(query)
         documents = results.get_documents(sort_by='date', reverse=True,
@@ -71,10 +71,8 @@ class Root_View(STLView):
         # Browse metadatas
         lines = []
         for news in documents:
-            year, month, day = news.date.split('-')
-            date_object = date(int(year), int(month), int(day))
-            format = format_date(date_object.day)
-            formated_date = date_object.strftime(format)
+            format = format_date(news.date.day)
+            formated_date = news.date.strftime(format)
             html = resource.get_resource(news.abspath).handler.events
             lines.append({
                 'title': news.title, 'date': formated_date, 'html': html})
@@ -161,7 +159,7 @@ class Root(Project, BaseRoot):
 
     def init_resource(self, email, password, admins=('0',)):
         BaseRoot.init_resource(self, email, password, admins=admins)
-        self.make_resource('news', NewsFolder)
+        self.make_resource('news', Blog)
         # Replace logo
         logo = self.get_resource('theme/logo')
         path = get_abspath('ui/hforge/images/logo2.png')
