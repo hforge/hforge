@@ -8,12 +8,12 @@
   related projects.
   </p>
   <h2 id="whatsnew">What's new?</h2>
-  <stl:block stl:repeat="object objects">
+  <div id="news" stl:repeat="object objects">
     <h4>${object/title} (${object/date})</h4>
     ${object/html}
-    <hr size="1" align="center" noshade="noshade" />
-  </stl:block>
+  </div>
+  <br/>
   <p>
-  <a href=";news">See all the news...</a>
+  [ <a href=";news">See all the news...</a> ]
   </p>
 </stl:block>
