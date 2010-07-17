@@ -41,6 +41,12 @@ hr {
   padding: 6px 10px 0px 12px;
 }
 
+#header #logo {
+  font-family: monospace;
+  font-size: 3em;
+  text-decoration: none;
+}
+
 
 /**************************************************************************
  * Body *

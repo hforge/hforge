@@ -162,11 +162,6 @@ class Root(Project, BaseRoot):
     def init_resource(self, email, password, admins=('0',)):
         BaseRoot.init_resource(self, email, password, admins=admins)
         self.make_resource('news', Blog)
-        # Replace logo
-        logo = self.get_resource('theme/logo')
-        path = get_abspath('ui/hforge/images/logo2.png')
-        data = open(path).read()
-        logo.handler.data = data
 
 
     def get_page_title(self):
@@ -184,11 +179,6 @@ class Root(Project, BaseRoot):
 
 
     def update_20100708(self):
-        # Logo
-        logo = self.get_resource('theme/logo')
-        path = get_abspath('ui/hforge/images/logo2.png')
-        data = open(path).read()
-        logo.handler.set_data(data)
         # Menu
         menu = self.get_resource('theme/menu/menu')
         menu.del_record(1)
