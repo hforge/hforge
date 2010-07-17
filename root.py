@@ -168,9 +168,6 @@ class Root(Project, BaseRoot):
         return None
 
 
-    # Restrict access to the folder's views
-    browse_content = Folder_BrowseContent(access='is_allowed_to_edit')
-
     # Custom Views
     view = Root_View()
     news = Root_News()
