@@ -28,12 +28,12 @@
     <!-- Header -->
     <div id="header">
       <div id="links">
-        <stl:block stl:if="not user/info">
+        <stl:block stl:if="not user">
           <a href="${login}" title="Log in" id="links-menu-login">Log in</a>
         </stl:block>
-        <stl:block stl:if="user/info">
-          <a href="${user/info/home}" title="${user/info/title}"
-             id="links-menu-profile">${user/info/title}</a>
+        <stl:block stl:if="user">
+          <a href="${user/home}" title="${user/title}"
+             id="links-menu-profile">${user/title}</a>
           <a href="${logout}" title="Log out" id="links-menu-logout"
             >Log out</a>
           <a href="${container_uri}/;new_resource" id="links-menu-new"
@@ -65,7 +65,7 @@
     </div>
 
     <!-- Location & Views-->
-    <stl:block stl:if="user/info">${location}</stl:block>
+    <stl:block stl:if="user">${location}</stl:block>
 
     <!-- Body -->
     <div id="body">
@@ -79,7 +79,7 @@
           <td stl:if="column" id="columnright">
             ${column}
           </td>
-          <td id="right" valign="top" stl:if="user/info">
+          <td id="right" valign="top" stl:if="user">
             <stl:block stl:repeat="menu context_menus">${menu}<br/></stl:block>
           </td>
         </tr>
