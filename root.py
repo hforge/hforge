@@ -173,16 +173,3 @@ class Root(Project, BaseRoot):
     news = Root_News()
     projects = Root_Projects()
     subscribe = Root_Subscribe()
-
-
-    def update_20100708(self):
-        # Menu
-        menu = self.get_resource('theme/menu/menu')
-        menu.del_record(1)
-        options = [('../../../;projects', u'Projects'),
-                   ('http://docs.hforge.org/', u'Documentation'),
-                   ('../../../community', u'Community')]
-        for path, title in options:
-            title = Property(title, language='en')
-            menu.add_new_record({'path': path, 'title': title,
-                                 'target': '_top'})
