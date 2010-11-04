@@ -23,12 +23,18 @@ from itools.csv import Property
 from itools.database import AndQuery, PhraseQuery
 from itools.datatypes import Email, String
 from itools.gettext import MSG
+from itools.handlers import get_handler_class_by_mimetype
 from itools.stl import stl
-from itools.web import STLView, BaseForm
+from itools.web import STLView, BaseForm, FormError
 
 # Import from ikaaro
+from ikaaro.autoform import AutoForm, FileWidget
+from ikaaro.buttons import Button
 from ikaaro.blog.blog import Blog, Post
+from ikaaro.datatypes import FileDataType
+from ikaaro.folder import Folder
 from ikaaro.folder_views import Folder_BrowseContent
+from ikaaro.messages import MSG_UNEXPECTED_MIMETYPE
 from ikaaro.root import Root as BaseRoot
 from ikaaro.website import WebSite
 
@@ -144,6 +150,45 @@ class Root_Subscribe(BaseForm):
 
 
 
+class Root_UpdateDocs(AutoForm):
+
+    access = 'is_admin'
+    title = MSG(u'Update docs')
+
+    schema = {
+        'file': FileDataType(mandatory=True)}
+    widgets = [
+        FileWidget('file', title=MSG(u'File'))]
+    actions = [
+        Button(access='is_admin', css='button-ok', title=MSG(u'Upload'))]
+
+
+    def _get_form(self, resource, context):
+        form = super(Root_UpdateDocs, self)._get_form(resource, context)
+        # Check the mimetype
+        filename, mimetype, body = form['file']
+        if mimetype not in ('application/x-tar', 'application/zip'):
+            raise FormError, MSG_UNEXPECTED_MIMETYPE(mimetype=mimetype)
+
+        return form
+
+
+    def action(self, resource, context, form):
+        # 1. Make the '/docs/' folder
+        resource.del_resource('docs', soft=True)
+        docs = resource.make_resource('docs', Folder)
+        # 2. Extract
+        filename, mimetype, body = form['file']
+        cls = get_handler_class_by_mimetype(mimetype)
+        handler = cls(string=body)
+        docs.extract_archive(handler, 'en')
+
+        # Ok
+        message = MSG(u'Documentation updated.')
+        return context.come_back(message, goto='/docs')
+
+
+
 ###########################################################################
 # Resource
 ###########################################################################
@@ -153,6 +198,7 @@ class Root(BaseRoot):
     class_version = '20100708'
     class_title = MSG(u'HForge')
     class_skin = 'ui/hforge'
+    class_views = BaseRoot.class_views + ['upload']
     __fixed_handlers__ = BaseRoot.__fixed_handlers__ + ['news']
 
 
@@ -170,3 +216,4 @@ class Root(BaseRoot):
     news = Root_News()
     projects = Root_Projects()
     subscribe = Root_Subscribe()
+    upload = Root_UpdateDocs()
