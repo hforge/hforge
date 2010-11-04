@@ -32,9 +32,6 @@ from ikaaro.folder_views import Folder_BrowseContent
 from ikaaro.root import Root as BaseRoot
 from ikaaro.website import WebSite
 
-# Import from hforge
-from project import Project
-
 
 ###########################################################################
 # Views
@@ -150,7 +147,7 @@ class Root_Subscribe(BaseForm):
 ###########################################################################
 # Resource
 ###########################################################################
-class Root(Project, BaseRoot):
+class Root(BaseRoot):
 
     class_id = 'hforge.org'
     class_version = '20100708'
