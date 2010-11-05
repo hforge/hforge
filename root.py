@@ -22,10 +22,14 @@ from itools.core import get_abspath
 from itools.csv import Property
 from itools.database import AndQuery, PhraseQuery
 from itools.datatypes import Email, String
+from itools.fs import FileName
 from itools.gettext import MSG
 from itools.handlers import get_handler_class_by_mimetype
-from itools.stl import stl
+from itools.html import XHTMLFile
+from itools.stl import stl, rewrite_uris
+from itools.uri import get_reference
 from itools.web import STLView, BaseForm, FormError
+from itools.xml import get_element
 
 # Import from ikaaro
 from ikaaro.autoform import AutoForm, FileWidget
@@ -174,6 +178,48 @@ class Root_UpdateDocs(AutoForm):
 
 
     def action(self, resource, context, form):
+        skip = set(['application/javascript', 'application/octet-stream',
+                    'text/css', 'text/plain'])
+        keep = set(['image/png'])
+
+        def rewrite(value):
+            if value[0] == '#':
+                return value
+            ref = get_reference(value)
+            if ref.scheme:
+                return value
+            name = ref.path.get_name()
+            name, extension, langage = FileName.decode(name)
+            if extension == 'png':
+                name = '%s/;download' % name
+            ref.path[-1] = name
+            return '../%s' % ref
+
+        def filter(path, mimetype, body):
+            # HTML
+            if mimetype == 'text/html':
+                source = XHTMLFile(string=body)
+                target = XHTMLFile()
+                elem = get_element(source.events, 'div', **{'class': 'body'})
+                if not elem:
+                    print 'E', path
+                    return None
+                elements = elem.get_content_elements()
+                elements = rewrite_uris(elements, rewrite)
+                elements = list(elements)
+                target.set_body(elements)
+                return target.to_str()
+            # Skip
+            elif mimetype in skip:
+                return None
+            # Keep
+            elif mimetype in keep:
+                return body
+            # Unknown
+            else:
+                print 'X', path, mimetype
+                return body
+
         # 1. Make the '/docs/' folder
         resource.del_resource('docs', soft=True)
         docs = resource.make_resource('docs', Folder)
@@ -181,7 +227,7 @@ class Root_UpdateDocs(AutoForm):
         filename, mimetype, body = form['file']
         cls = get_handler_class_by_mimetype(mimetype)
         handler = cls(string=body)
-        docs.extract_archive(handler, 'en')
+        docs.extract_archive(handler, 'en', filter)
 
         # Ok
         message = MSG(u'Documentation updated.')
