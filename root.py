@@ -14,12 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from datetime import date
-
 # Import from itools
-from itools.core import get_abspath
-from itools.csv import Property
 from itools.database import AndQuery, PhraseQuery
 from itools.datatypes import Email, String
 from itools.fs import FileName
@@ -37,7 +32,6 @@ from ikaaro.buttons import Button
 from ikaaro.blog.blog import Blog, Post
 from ikaaro.datatypes import FileDataType
 from ikaaro.folder import Folder
-from ikaaro.folder_views import Folder_BrowseContent
 from ikaaro.messages import MSG_UNEXPECTED_MIMETYPE
 from ikaaro.root import Root as BaseRoot
 from ikaaro.website import WebSite
