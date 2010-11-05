@@ -220,6 +220,9 @@ class Root_UpdateDocs(AutoForm):
                 print 'X', path, mimetype
                 return body
 
+        def postproc(file):
+            file.set_property('state', 'public')
+
         # 1. Make the '/docs/' folder
         resource.del_resource('docs', soft=True)
         docs = resource.make_resource('docs', Folder)
@@ -227,7 +230,7 @@ class Root_UpdateDocs(AutoForm):
         filename, mimetype, body = form['file']
         cls = get_handler_class_by_mimetype(mimetype)
         handler = cls(string=body)
-        docs.extract_archive(handler, 'en', filter)
+        docs.extract_archive(handler, 'en', filter, postproc)
 
         # Ok
         message = MSG(u'Documentation updated.')
