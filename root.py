@@ -174,7 +174,7 @@ class Root_UpdateDocs(AutoForm):
     def action(self, resource, context, form):
         skip = set(['application/javascript', 'application/octet-stream',
                     'text/css', 'text/plain'])
-        keep = set(['image/png'])
+        keep = set(['application/pdf', 'image/png'])
 
         def rewrite(value):
             if value[0] == '#':
@@ -184,7 +184,7 @@ class Root_UpdateDocs(AutoForm):
                 return value
             name = ref.path.get_name()
             name, extension, langage = FileName.decode(name)
-            if extension == 'png':
+            if extension in ('png', 'pdf'):
                 name = '%s/;download' % name
             ref.path[-1] = name
             return '../%s' % ref
