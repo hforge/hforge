@@ -13,6 +13,8 @@
     <!-- Canonical URL for search engines -->
     <link rel="canonical" href="${canonical_uri}" />
     <!-- CSS -->
+    <link type="text/css" rel="stylesheet" href="sphinx/basic.css" />
+    <link type="text/css" rel="stylesheet" href="sphinx/pygments.css" />
     <link type="text/css" rel="stylesheet" stl:repeat="style styles"
       href="${style}" />
     <link type="text/css" rel="stylesheet" href="../odf-i18n/style.css" />
