@@ -38,6 +38,8 @@ class Skin(BaseSkin):
     def build_namespace(self, context):
         namespace = BaseSkin.build_namespace(self, context)
         namespace['column'] = None
+        if context.user is None:
+            namespace['location'].tabs = None
 
         # Right Column
         resource = context.resource

@@ -69,7 +69,7 @@
     </div>
 
     <!-- Location & Views-->
-    <stl:block stl:if="user">${location}</stl:block>
+    ${location}
 
     <!-- Body -->
     <div id="body">
