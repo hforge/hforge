@@ -131,7 +131,7 @@ class Project_UpdateDocs(AutoForm):
 
         # Ok
         message = MSG(u'Documentation updated.')
-        return context.come_back(message, goto='/docs')
+        return context.come_back(message, goto='./docs')
 
 
 
