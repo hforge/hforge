@@ -83,7 +83,7 @@
           <td stl:if="column" id="columnright">
             ${column}
           </td>
-          <td id="right" valign="top" stl:if="user">
+          <td id="right" valign="top" stl:if="context_menus">
             <stl:block stl:repeat="menu context_menus">${menu}<br/></stl:block>
           </td>
         </tr>
