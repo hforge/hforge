@@ -20,7 +20,6 @@ from itools import get_version
 # Import from itws
 from root import Root
 import skins
-import ws_odf
 
 # Make the product version available to Python code
 __version__ = get_version()

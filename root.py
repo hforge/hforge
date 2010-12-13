@@ -28,6 +28,7 @@ from ikaaro.website import WebSite
 
 # Import from hforge
 from project import Project
+from ws_odf import ODFWS
 
 
 ###########################################################################
@@ -162,6 +163,10 @@ class Root(Project, BaseRoot):
 
     def get_page_title(self):
         return None
+
+
+    def get_document_types(self):
+        return BaseRoot.get_document_types(self) + [Project, ODFWS]
 
 
     # Custom Views

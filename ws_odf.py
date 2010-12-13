@@ -34,8 +34,6 @@ from itools.xml import XMLParser, XMLError
 
 # Import from ikaaro
 from ikaaro.datatypes import FileDataType
-from ikaaro.registry import register_document_type
-from ikaaro.website import WebSite
 
 # Import from hforge
 from project import Project
@@ -359,10 +357,3 @@ class ODFWS(Project):
     browse_tests = ODFWSBrowseTests()
     translation = Translation_View()
     greek = Greek_View()
-
-
-
-###########################################################################
-# Register
-###########################################################################
-register_document_type(ODFWS, WebSite.class_id)

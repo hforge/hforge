@@ -31,7 +31,6 @@ from ikaaro.blog import Blog
 from ikaaro.datatypes import FileDataType
 from ikaaro.folder import Folder
 from ikaaro.messages import MSG_UNEXPECTED_MIMETYPE
-from ikaaro.registry import register_document_type
 from ikaaro.website import WebSite
 
 
@@ -148,7 +147,3 @@ class Project(WebSite):
         self.make_resource('news', Blog)
 
     update_docs = Project_UpdateDocs()
-
-
-# Register
-register_document_type(Project, WebSite.class_id)
