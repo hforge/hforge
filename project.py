@@ -120,13 +120,14 @@ class Project_UpdateDocs(AutoForm):
             handler.events = events[:elem.start] + events[elem.end+1:]
 
         # 1. Make the '/docs/' folder
-        resource.del_resource('docs', soft=True)
-        docs = resource.make_resource('docs', Folder)
+        docs = resource.get_resource('docs', soft=True)
+        if not docs:
+            docs = resource.make_resource('docs', Folder)
         # 2. Extract
         filename, mimetype, body = form['file']
         cls = get_handler_class_by_mimetype(mimetype)
         handler = cls(string=body)
-        docs.extract_archive(handler, 'en', filter, postproc)
+        docs.extract_archive(handler, 'en', filter, postproc, True)
 
         # Ok
         message = MSG(u'Documentation updated.')
