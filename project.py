@@ -110,14 +110,15 @@ class Project_UpdateDocs(AutoForm):
             handler = file.get_handler()
             events = handler.events
             elem = get_element(events, 'h1')
-            title = [
-                unicode(x[1], 'utf8') for x in elem.get_content_elements()
-                if x[0] == TEXT ]
-            if title[-1] == u'¶':
-                title.pop()
-            title = u''.join(title)
-            file.set_property('title', title, 'en')
-            handler.events = events[:elem.start] + events[elem.end+1:]
+            if elem:
+                title = [
+                    unicode(x[1], 'utf8')
+                    for x in elem.get_content_elements() if x[0] == TEXT ]
+                if title[-1] == u'¶':
+                    title.pop()
+                title = u''.join(title)
+                file.set_property('title', title, 'en')
+                handler.events = events[:elem.start] + events[elem.end+1:]
 
         # 1. Make the '/docs/' folder
         docs = resource.get_resource('docs', soft=True)
