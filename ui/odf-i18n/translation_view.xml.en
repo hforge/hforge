@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://www.hforge.org/xml-namespaces/stl">
 
-  <form action=";odf2tr" method="post" enctype="multipart/form-data">
+  <form action=";translation" method="post" enctype="multipart/form-data">
     <fieldset>
       <legend>ODF to PO/XLIFF</legend>
       <p>
@@ -24,12 +24,12 @@
           <input type="radio" name="output_type" value="XLIFF" /> XLIFF</dd>
       </dl>
       <br/>
-      <button type="submit">Send</button>
+      <button type="submit" name="action" value="odf2tr">Send</button>
     </fieldset>
   </form>
   <br/>
 
-  <form action=";odf2odf" method="post" enctype="multipart/form-data">
+  <form action=";translation" method="post" enctype="multipart/form-data">
     <fieldset>
       <legend>ODF + PO/XLIFF to ODF</legend>
       <p>
@@ -48,7 +48,7 @@
         <dd><input id="tr_input" type="file" name="tr_input" /></dd>
       </dl>
       <br/>
-      <button type="submit">Send</button>
+      <button type="submit" name="action" value="odf2odf">Send</button>
     </fieldset>
   </form>
   <p>
