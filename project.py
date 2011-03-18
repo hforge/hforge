@@ -117,6 +117,7 @@ class Project_UpdateDocs(AutoForm):
                 if title[-1] == u'¶':
                     title.pop()
                 title = u''.join(title)
+                # FIXME Language hardcoded
                 file.set_property('title', title, 'en')
                 handler.events = events[:elem.start] + events[elem.end+1:]
 
