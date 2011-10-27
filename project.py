@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.datatypes import String
 from itools.fs import FileName
 from itools.gettext import MSG
 from itools.handlers import get_handler_class_by_mimetype
@@ -25,7 +26,7 @@ from itools.web import FormError
 from itools.xml import get_element, TEXT
 
 # Import from ikaaro
-from ikaaro.autoform import AutoForm, FileWidget
+from ikaaro.autoform import AutoForm, FileWidget, TextWidget
 from ikaaro.buttons import Button
 from ikaaro.blog import Blog
 from ikaaro.datatypes import FileDataType
@@ -41,9 +42,13 @@ class Project_UpdateDocs(AutoForm):
     title = MSG(u'Update docs')
 
     schema = {
-        'file': FileDataType(mandatory=True)}
+        'file': FileDataType(mandatory=True),
+        'language': String(mandatory=True, default='en')}
     widgets = [
-        FileWidget('file', title=MSG(u'File'))]
+        FileWidget('file', title=MSG(u'File')),
+        TextWidget('language', title=MSG(u'Language'),
+            tip=MSG(u'"en", "fr", ...'))]
+
     actions = [
         Button(access='is_admin', css='button-ok', title=MSG(u'Upload'))]
 
@@ -62,6 +67,7 @@ class Project_UpdateDocs(AutoForm):
         skip = set(['application/javascript', 'application/octet-stream',
                     'text/css', 'text/plain'])
         keep = set(['application/pdf', 'image/png'])
+        language = form['language']
 
         def rewrite(value):
             if value[0] == '#':
@@ -117,8 +123,7 @@ class Project_UpdateDocs(AutoForm):
                 if title[-1] == u'¶':
                     title.pop()
                 title = u''.join(title)
-                # FIXME Language hardcoded
-                file.set_property('title', title, 'en')
+                file.set_property('title', title, language)
                 handler.events = events[:elem.start] + events[elem.end+1:]
 
         # 1. Make the '/docs/' folder
@@ -129,7 +134,7 @@ class Project_UpdateDocs(AutoForm):
         filename, mimetype, body = form['file']
         cls = get_handler_class_by_mimetype(mimetype)
         handler = cls(string=body)
-        docs.extract_archive(handler, 'en', filter, postproc, True)
+        docs.extract_archive(handler, language, filter, postproc, True)
 
         # Ok
         message = MSG(u'Documentation updated.')
