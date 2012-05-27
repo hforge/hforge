@@ -4,6 +4,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="${language}"
   xmlns:stl="http://www.hforge.org/xml-namespaces/stl">
   <head>
+    <link rel="stylesheet" type="text/css"
+      href="http://fonts.googleapis.com/css?family=Chango" />
     <title>${title}</title>
     <base href="${base_uri}" />
     <!-- Meta -->
@@ -64,7 +66,7 @@
         </li>
       </ul>
       <!-- Logo -->
-      <a href="/" stl:if="logo_href" id="logo">Hacker's Forge</a>
+      <a href="/" stl:if="logo_href" id="logo">HForge</a>
       <div class="clear" />
     </div>
 
